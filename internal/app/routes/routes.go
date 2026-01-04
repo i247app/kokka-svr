@@ -1,21 +1,13 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/i247app/gex"
 	"kokka.com/kokka/internal/app/resources"
 	"kokka.com/kokka/internal/app/services"
 	"kokka.com/kokka/internal/handlers/http/controller"
-	"kokka.com/kokka/internal/shared/constant/status"
-	"kokka.com/kokka/internal/shared/utils/response"
 )
 
 func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *services.ServiceContainer) {
-	// Test route
-	server.AddRoute("POST /test", func(w http.ResponseWriter, r *http.Request) {
-		response.WriteJson(w, r.Context(), "hehe cho test thoi", nil, status.OK)
-	})
 
 	// blockchain routes
 	bc := controller.NewBlockchainController(services.BlockchainService)

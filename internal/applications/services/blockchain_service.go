@@ -97,7 +97,7 @@ func (s *BlockchainService) CallContract(ctx context.Context, req *dtos.CallCont
 		block = "latest"
 	}
 
-	result, err := s.client.CallContract(ctx, req.To, req.Data, block)
+	result, err := s.client.CallContract(ctx, req.To, req.Value, block)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call contract: %w", err)
 	}
@@ -109,7 +109,7 @@ func (s *BlockchainService) CallContract(ctx context.Context, req *dtos.CallCont
 
 // EstimateGas estimates the gas required for a transaction
 func (s *BlockchainService) EstimateGas(ctx context.Context, req *dtos.EstimateGasRequest) (*dtos.EstimateGasResponse, error) {
-	gasEstimate, err := s.client.EstimateGas(ctx, req.From, req.To, req.Data)
+	gasEstimate, err := s.client.EstimateGas(ctx, req.From, req.To, req.Value)
 	if err != nil {
 		return nil, fmt.Errorf("failed to estimate gas: %w", err)
 	}

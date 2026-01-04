@@ -24,15 +24,15 @@ type GetTransactionRequest struct {
 // CallContractRequest represents a request to call a contract method (read-only)
 type CallContractRequest struct {
 	To    string `json:"to"`
-	Data  string `json:"data"`
+	Value string `json:"value"`
 	Block string `json:"block,omitempty"` // Optional, defaults to "latest"
 }
 
 // EstimateGasRequest represents a request to estimate gas for a transaction
 type EstimateGasRequest struct {
-	From string `json:"from"`
-	To   string `json:"to"`
-	Data string `json:"data,omitempty"`
+	From  string `json:"from"`
+	To    string `json:"to"`
+	Value string `json:"value,omitempty"`
 }
 
 // SendRawTransactionRequest represents a request to broadcast a signed transaction

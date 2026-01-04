@@ -25,7 +25,7 @@ func NewBlockchainController(blockchainService diSvc.IBlockChainService) *Blockc
 	}
 }
 
-// GetBlockNumber handles GET /api/blockchain/block-number
+// GetBlockNumber handles GET /blockchain/block-number
 func (c *BlockchainController) GetBlockNumber(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -38,7 +38,33 @@ func (c *BlockchainController) GetBlockNumber(w http.ResponseWriter, r *http.Req
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// GetBalance handles POST /api/blockchain/balance
+// GetGasPrice handles GET /blockchain/gas-price
+func (c *BlockchainController) GetGasPrice(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	result, err := c.blockchainService.GetGasPrice(ctx)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.OK)
+}
+
+// GetChainID handles GET /blockchain/chain-id
+func (c *BlockchainController) GetChainID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	result, err := c.blockchainService.GetChainID(ctx)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.OK)
+}
+
+// GetBalance handles POST /blockchain/balance
 func (c *BlockchainController) GetBalance(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -64,7 +90,7 @@ func (c *BlockchainController) GetBalance(w http.ResponseWriter, r *http.Request
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// GetBlock handles POST /api/blockchain/block
+// GetBlock handles POST /blockchain/block
 func (c *BlockchainController) GetBlock(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -90,7 +116,7 @@ func (c *BlockchainController) GetBlock(w http.ResponseWriter, r *http.Request) 
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// GetTransaction handles POST /api/blockchain/transaction
+// GetTransaction handles POST /blockchain/transaction
 func (c *BlockchainController) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -116,7 +142,7 @@ func (c *BlockchainController) GetTransaction(w http.ResponseWriter, r *http.Req
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// CallContract handles POST /api/blockchain/call
+// CallContract handles POST /blockchain/call
 func (c *BlockchainController) CallContract(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -142,7 +168,7 @@ func (c *BlockchainController) CallContract(w http.ResponseWriter, r *http.Reque
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// EstimateGas handles POST /api/blockchain/estimate-gas
+// EstimateGas handles POST /blockchain/estimate-gas
 func (c *BlockchainController) EstimateGas(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -168,7 +194,7 @@ func (c *BlockchainController) EstimateGas(w http.ResponseWriter, r *http.Reques
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// SendRawTransaction handles POST /api/blockchain/send-transaction
+// SendRawTransaction handles POST /blockchain/send-transaction
 func (c *BlockchainController) SendRawTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -194,33 +220,7 @@ func (c *BlockchainController) SendRawTransaction(w http.ResponseWriter, r *http
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// GetGasPrice handles GET /api/blockchain/gas-price
-func (c *BlockchainController) GetGasPrice(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	result, err := c.blockchainService.GetGasPrice(ctx)
-	if err != nil {
-		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
-		return
-	}
-
-	response.WriteJson(w, ctx, result, nil, status.OK)
-}
-
-// GetChainID handles GET /api/blockchain/chain-id
-func (c *BlockchainController) GetChainID(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	result, err := c.blockchainService.GetChainID(ctx)
-	if err != nil {
-		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
-		return
-	}
-
-	response.WriteJson(w, ctx, result, nil, status.OK)
-}
-
-// GenericRPCCall handles POST /api/blockchain/rpc
+// GenericRPCCall handles POST /blockchain/rpc
 // This allows calling any JSON-RPC method directly
 func (c *BlockchainController) GenericRPCCall(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

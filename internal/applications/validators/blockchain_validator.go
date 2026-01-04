@@ -77,11 +77,11 @@ func ValidateCallContractRequest(req *dtos.CallContractRequest) error {
 		return errors.New("invalid to address format")
 	}
 
-	if req.Data == "" {
+	if req.Value == "" {
 		return errors.New("data is required")
 	}
 
-	if !isValidHexData(req.Data) {
+	if !isValidHexData(req.Value) {
 		return errors.New("invalid data format (must be hex string with 0x prefix)")
 	}
 
@@ -112,7 +112,7 @@ func ValidateEstimateGasRequest(req *dtos.EstimateGasRequest) error {
 	}
 
 	// Data is optional, but if provided, should be valid hex
-	if req.Data != "" && !isValidHexData(req.Data) {
+	if req.Value != "" && !isValidHexData(req.Value) {
 		return errors.New("invalid data format (must be hex string with 0x prefix)")
 	}
 

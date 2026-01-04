@@ -40,10 +40,10 @@ func NewClient(config *Config) *Client {
 func (c *Client) Call(ctx context.Context, method string, params interface{}) (*JSONRPCResponse, error) {
 	// Build JSON-RPC request
 	request := JSONRPCRequest{
+		ID:      atomic.AddInt64(&c.requestID, 1),
 		JsonRPC: "2.0",
 		Method:  method,
 		Params:  params,
-		ID:      atomic.AddInt64(&c.requestID, 1),
 	}
 
 	// Execute HTTP POST request
@@ -125,10 +125,10 @@ func (c *Client) GetBlockByNumber(ctx context.Context, blockNumber string, fullT
 }
 
 // CallContract calls a contract method (read-only)
-func (c *Client) CallContract(ctx context.Context, to string, data string, block string) (string, error) {
+func (c *Client) CallContract(ctx context.Context, to string, value string, block string) (string, error) {
 	callObject := map[string]interface{}{
-		"to":   to,
-		"data": data,
+		"to":    to,
+		"value": value,
 	}
 	params := []interface{}{callObject, block}
 
@@ -146,11 +146,11 @@ func (c *Client) CallContract(ctx context.Context, to string, data string, block
 }
 
 // EstimateGas estimates gas for a transaction
-func (c *Client) EstimateGas(ctx context.Context, from, to, data string) (string, error) {
+func (c *Client) EstimateGas(ctx context.Context, from, to, value string) (string, error) {
 	txObject := map[string]interface{}{
-		"from": from,
-		"to":   to,
-		"data": data,
+		"from":  from,
+		"to":    to,
+		"value": value,
 	}
 	params := []interface{}{txObject}
 
