@@ -1,0 +1,30 @@
+.air.toml
+session_data_store
+.vscode/
+.DS_Store
+log_file
+
+# AI files
+.cursor/
+.claude/
+CLAUDE.md
+
+# go workspace files
+go.work
+go.work.sum
+
+# env file
+.env*
+!.env.*example
+
+# secrets
+secrets/
+keys/
+*.pem
+
+# build files
+dist/
+.aider*
+CONVENTIONS.md
+graphql-examples.http
+
