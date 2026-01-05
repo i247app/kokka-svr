@@ -26,5 +26,6 @@ keys/
 dist/
 .aider*
 CONVENTIONS.md
+BLOCKCHAIN_API_GUIDE.md
 graphql-examples.http
 

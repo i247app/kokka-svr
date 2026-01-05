@@ -156,7 +156,6 @@ func (s *BlockchainService) GetChainID(ctx context.Context) (*dtos.GetChainIDRes
 }
 
 // GenericRPCCall allows calling any JSON-RPC method directly
-// This is useful for methods not explicitly supported yet
 func (s *BlockchainService) GenericRPCCall(ctx context.Context, req *dtos.GenericRPCRequest) (*dtos.GenericRPCResponse, error) {
 	resp, err := s.client.Call(ctx, req.Method, req.Params)
 	if err != nil {
