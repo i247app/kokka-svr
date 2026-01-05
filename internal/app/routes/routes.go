@@ -23,5 +23,6 @@ func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *s
 	server.AddRoute("POST /blockchain/call", bc.CallContract)
 	server.AddRoute("POST /blockchain/estimate-gas", bc.EstimateGas)
 	server.AddRoute("POST /blockchain/send-transaction", bc.SendRawTransaction)
+	server.AddRoute("POST /blockchain/sign-and-send", bc.SignAndSendTransaction)
 	server.AddRoute("POST /blockchain/rpc", bc.GenericRPCCall)
 }

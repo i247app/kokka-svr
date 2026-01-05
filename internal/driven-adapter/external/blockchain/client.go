@@ -212,3 +212,19 @@ func (c *Client) GetChainID(ctx context.Context) (string, error) {
 
 	return result, nil
 }
+
+// GetTransactionCount returns the number of transactions sent from an address
+func (c *Client) GetTransactionCount(ctx context.Context, address string, block string) (string, error) {
+	params := []interface{}{address, block}
+	resp, err := c.Call(ctx, "eth_getTransactionCount", params)
+	if err != nil {
+		return "", fmt.Errorf("failed to get transaction count: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse transaction count: %w", err)
+	}
+
+	return result, nil
+}

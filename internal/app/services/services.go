@@ -3,6 +3,7 @@ package services
 import (
 	"kokka.com/kokka/internal/app/resources"
 	"kokka.com/kokka/internal/applications/services"
+	"kokka.com/kokka/internal/applications/validators"
 	diSvc "kokka.com/kokka/internal/core/di/services"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
 )
@@ -19,10 +20,20 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 	}
 	blockchainClient := blockchain.NewClient(blockchainConfig)
 
-	// Initialize blockchain service
-	blockchainService := services.NewBlockchainService(blockchainClient)
+	// Initialize transaction signer (if private key is configured)
+	var txSigner *blockchain.TransactionSigner
+	if res.Env.BlockchainConfig != nil && res.Env.BlockchainConfig.PrivateKey != "" {
+		var err error
+		txSigner, err = blockchain.NewTransactionSigner(res.Env.BlockchainConfig.PrivateKey, blockchainClient)
+		if err != nil {
+			// Log warning but don't fail - signing features just won't be available
+			println("Warning: Failed to initialize transaction signer:", err.Error())
+		}
+	}
 
-	// Initialize blockchain controller
+	// Initialize blockchain service
+	blockChainValidator := validators.NewBlockChainValidator()
+	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, txSigner)
 
 	return &ServiceContainer{
 		BlockchainService: blockchainService,

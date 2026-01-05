@@ -67,7 +67,8 @@ func NewEnv(envpath string) (*Env, error) {
 			Bucket:    getConfig("S3_BUCKET"),
 		},
 		BlockchainConfig: &BlockchainConfig{
-			RPCURL: getConfigWithDefault("BLOCKCHAIN_RPC_URL", "https://x24.i247.com"),
+			RPCURL:     getConfigWithDefault("BLOCKCHAIN_RPC_URL", "https://x24.i247.com"),
+			PrivateKey: getConfig("BLOCKCHAIN_PRIVATE_KEY"),
 		},
 		SharedKeyBytes: getFileBytesConfig("GEX_SHARED_KEY"),
 		LogFile:        getConfig("LOG_FILE_PATH"),
