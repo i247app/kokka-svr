@@ -4,7 +4,6 @@
 run:
 	@go run ./cmd/server
 
-
 # Get list of .sql files from the up/ directory, sorted from old to new
 MIGRATE_UP_FILES := $(shell ls migrations/up/*.sql | sort)
 
@@ -73,18 +72,11 @@ migrate-down-deploy:
 	fi
 	@echo "✅ All DOWN migrations completed."
 
+# login to aws via ssh tunnel
 login:
 	@./bin/login.sh
 
-
-## list-models: List all available Google AI models
-list-models:
-	@if [ ! -f ./bin/list-models ]; then \
-		echo "Building list-models utility..."; \
-		go build -o bin/list-models ./cmd/list-models; \
-	fi
-	@./bin/list-models
-
+# tidy go modules
 tidy:
 	go mod tidy
 
@@ -96,7 +88,7 @@ build: tidy
 build-ec2: tidy
 	GOOS=linux GOARCH=arm64 go build -o dist/server ./cmd/server
 	
-# chmod +x bin/init_deploy.sh
+# chmod +x bin/init-deploy
 init-deploy:
 	@echo "make[$@] init deploy from mac to ec2..."
 	./bin/init_deploy.sh
@@ -108,5 +100,3 @@ deploy-ec2-remote: build-ec2
 	./bin/remote_deploy.sh
 	@echo "make[$@] done"
 
-
-## login: Login to AWS

@@ -31,6 +31,9 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 		}
 	}
 
+	println("RPCURL", res.Env.BlockchainConfig.RPCURL)
+	println("PrivateKey", res.Env.BlockchainConfig.PrivateKey)
+
 	// Initialize blockchain service
 	blockChainValidator := validators.NewBlockChainValidator()
 	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, txSigner)

@@ -184,7 +184,6 @@ func (c *BlockchainController) SendRawTransaction(w http.ResponseWriter, r *http
 }
 
 // SignAndSendTransaction handles POST /blockchain/sign-and-send
-// This endpoint signs the transaction on the server side using a configured private key
 func (c *BlockchainController) SignAndSendTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -205,7 +204,6 @@ func (c *BlockchainController) SignAndSendTransaction(w http.ResponseWriter, r *
 }
 
 // GenericRPCCall handles POST /blockchain/rpc
-// This allows calling any JSON-RPC method directly
 func (c *BlockchainController) GenericRPCCall(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

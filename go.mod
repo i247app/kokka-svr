@@ -3,6 +3,7 @@ module kokka.com/kokka
 go 1.24.4
 
 require (
+	github.com/ethereum/go-ethereum v1.16.7
 	github.com/i247app/gex v0.0.30
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.46.0
@@ -16,7 +17,6 @@ require (
 	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/ethereum/c-kzg-4844/v2 v2.1.5 // indirect
-	github.com/ethereum/go-ethereum v1.16.7 // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/holiman/uint256 v1.3.2 // indirect
 	github.com/rs/cors v1.11.1 // indirect
