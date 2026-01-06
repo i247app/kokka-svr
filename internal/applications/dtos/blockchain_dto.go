@@ -1,9 +1,5 @@
 package dtos
 
-// ========================================
-// Request DTOs (from client to server)
-// ========================================
-
 // GetBalanceRequest represents a request to get an address balance
 type GetBalanceRequest struct {
 	Address string `json:"address"`
@@ -58,10 +54,6 @@ type GenericRPCRequest struct {
 	Params interface{} `json:"params"`
 }
 
-// ========================================
-// Response DTOs (from server to client)
-// ========================================
-
 // GetBalanceResponse represents the response for balance query
 type GetBalanceResponse struct {
 	Address string `json:"address"`
@@ -101,8 +93,8 @@ type SendRawTransactionResponse struct {
 
 // SignAndSendTransactionResponse represents the response for sign and send transaction
 type SignAndSendTransactionResponse struct {
-	TxHash      string `json:"tx_hash"`       // Transaction hash
-	FromAddress string `json:"from_address"`  // Address that signed and sent the transaction
+	TxHash      string `json:"tx_hash"`      // Transaction hash
+	FromAddress string `json:"from_address"` // Address that signed and sent the transaction
 }
 
 // GetGasPriceResponse represents the response for current gas price

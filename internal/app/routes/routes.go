@@ -25,4 +25,17 @@ func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *s
 	server.AddRoute("POST /blockchain/send-transaction", bc.SendRawTransaction)
 	server.AddRoute("POST /blockchain/sign-and-send", bc.SignAndSendTransaction)
 	server.AddRoute("POST /blockchain/rpc", bc.GenericRPCCall)
+
+	// vndx token routes
+	vndx := controller.NewVndxController(services.VNDXService)
+	// POST endpoints
+	server.AddRoute("POST /vndx/mint", vndx.HandleMintVNDX)
+	server.AddRoute("POST /vndx/burn", vndx.HandleBurnVNDX)
+	server.AddRoute("POST /vndx/transfer", vndx.HandleTransferVNDX)
+
+	// GET endpoints
+	server.AddRoute("GET /vndx/balance", vndx.HandleGetVNDXBalance)
+	server.AddRoute("GET /vndx/mint-request", vndx.HandleGetMintRequest)
+	server.AddRoute("GET /vndx/burn-request", vndx.HandleGetBurnRequest)
+	server.AddRoute("GET /vndx/transaction-history", vndx.HandleGetVNDXTransactionHistory)
 }

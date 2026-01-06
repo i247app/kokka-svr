@@ -240,10 +240,10 @@ func isValidHexData(data string) bool {
 	if !strings.HasPrefix(data, "0x") {
 		return false
 	}
-	// Data must have even length (excluding 0x prefix)
-	if len(data[2:])%2 != 0 {
-		return false
-	}
+	// // Data must have even length (excluding 0x prefix)
+	// if len(data[2:])%2 != 0 {
+	// 	return false
+	// }
 	return isValidHex(data[2:])
 }
 

@@ -1,4 +1,4 @@
-.PHONY: build run tidy migrate-create login migrate-up migrate-down migrate-up-deploy migrate-down-deploy login build-ec2 init-deploy deploy-ec2-remote
+.PHONY: build run tidy migrate-create login migrate-up migrate-down migrate-up-deploy migrate-down-deploy login build-ec2 init-deploy deploy-ec2-remote gen-abi
 
 ## run: Run the app.
 run:
@@ -99,4 +99,11 @@ deploy-ec2-remote: build-ec2
 	@echo "make[$@] build and deploy from mac to ec2..."
 	./bin/remote_deploy.sh
 	@echo "make[$@] done"
+
+# generate Go bindings from VNDX contract ABI
+gen-abi:
+	@echo "Generating Go bindings from VNDX ABI..."
+	@mkdir -p internal/driven-adapter/external/blockchain/vndx
+	@abigen --abi=contracts/vndx/VNDX.abi --pkg=vndx --type=VNDX --out=internal/driven-adapter/external/blockchain/vndx/vndx.go
+	@echo "✅ Go bindings generated successfully!"
 

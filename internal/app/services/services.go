@@ -10,6 +10,7 @@ import (
 
 type ServiceContainer struct {
 	BlockchainService diSvc.IBlockChainService
+	VNDXService       diSvc.IVNDXService
 }
 
 func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error) {
@@ -38,7 +39,24 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 	blockChainValidator := validators.NewBlockChainValidator()
 	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, txSigner)
 
+	// Initialize VNDX service
+	var vndxService diSvc.IVNDXService
+	if res.Env.BlockchainConfig.VNDXIssuerAddress != "" && txSigner != nil {
+		vndxClient, err := blockchain.NewVNDXClient(
+			res.Env.BlockchainConfig.VNDXIssuerAddress,
+			blockchainClient,
+			txSigner,
+		)
+		if err != nil {
+			println("Warning: Failed to initialize VNDX client:", err.Error())
+		} else {
+			vndxValidator := validators.NewVNDXValidator()
+			vndxService = services.NewVNDXService(vndxValidator, vndxClient)
+		}
+	}
+
 	return &ServiceContainer{
 		BlockchainService: blockchainService,
+		VNDXService:       vndxService,
 	}, nil
 }
