@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"kokka.com/kokka/internal/app/resources"
 	"kokka.com/kokka/internal/applications/services"
 	"kokka.com/kokka/internal/applications/validators"
@@ -21,37 +23,22 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 	}
 	blockchainClient := blockchain.NewClient(blockchainConfig)
 
-	// Initialize transaction signer (if private key is configured)
-	var txSigner *blockchain.TransactionSigner
-	if res.Env.BlockchainConfig != nil && res.Env.BlockchainConfig.PrivateKey != "" {
-		var err error
-		txSigner, err = blockchain.NewTransactionSigner(res.Env.BlockchainConfig.PrivateKey, blockchainClient)
-		if err != nil {
-			// Log warning but don't fail - signing features just won't be available
-			println("Warning: Failed to initialize transaction signer:", err.Error())
-		}
-	}
-
 	println("RPCURL", res.Env.BlockchainConfig.RPCURL)
-	println("PrivateKey", res.Env.BlockchainConfig.PrivateKey)
+	println("DecryptionKey loaded:", len(res.Env.BlockchainConfig.DecryptionKey), "characters")
 
-	// Initialize blockchain service
+	// Initialize blockchain service (no global signer - uses per-request signing)
 	blockChainValidator := validators.NewBlockChainValidator()
-	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, txSigner)
+	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, nil)
 
-	// Initialize Token service
-	var tokenService diSvc.ITokenService
-	if txSigner != nil {
-		tokenClient, err := blockchain.NewTokenClient(
-			blockchainClient,
-			txSigner,
-		)
-		if err != nil {
-			println("Warning: Failed to initialize token client:", err.Error())
-		} else {
-			tokenValidator := validators.NewTokenValidator()
-			tokenService = services.NewTokenService(tokenValidator, tokenClient)
-		}
+	// Initialize Token service (uses per-request signers, no global signer needed)
+	tokenValidator := validators.NewTokenValidator()
+	tokenService, err := services.NewTokenService(
+		tokenValidator,
+		blockchainClient,
+		res.Env.BlockchainConfig.DecryptionKey,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize token service: %w", err)
 	}
 
 	return &ServiceContainer{

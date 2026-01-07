@@ -20,13 +20,10 @@ type TokenClient struct {
 }
 
 // NewTokenClient creates a new token client
+// signer can be nil for read-only operations (e.g., BalanceOf)
 func NewTokenClient(client *Client, signer *TransactionSigner) (*TokenClient, error) {
 	if client == nil {
 		return nil, fmt.Errorf("blockchain client is required")
-	}
-
-	if signer == nil {
-		return nil, fmt.Errorf("transaction signer is required")
 	}
 
 	// Parse ABI

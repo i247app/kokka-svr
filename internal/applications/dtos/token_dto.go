@@ -2,9 +2,10 @@ package dtos
 
 // MintTokenRequest represents a request to mint tokens
 type MintTokenRequest struct {
-	ContractAddress string `json:"contract_address"`
-	To              string `json:"to"`
-	Amount          string `json:"amount"`
+	ContractAddress     string `json:"contract_address"`
+	To                  string `json:"to"`
+	Amount              string `json:"amount"`
+	EncryptedPrivateKey string `json:"encrypted_private_key"`
 }
 
 // MintTokenResponse represents the response from minting tokens
@@ -18,8 +19,9 @@ type MintTokenResponse struct {
 
 // BurnTokenRequest represents a request to burn tokens
 type BurnTokenRequest struct {
-	ContractAddress string `json:"contract_address"`
-	Amount          string `json:"amount"`
+	ContractAddress     string `json:"contract_address"`
+	Amount              string `json:"amount"`
+	EncryptedPrivateKey string `json:"encrypted_private_key"`
 }
 
 // BurnTokenResponse represents the response from burning tokens
@@ -32,9 +34,10 @@ type BurnTokenResponse struct {
 
 // TransferTokenRequest represents a request to transfer tokens
 type TransferTokenRequest struct {
-	ContractAddress string `json:"contract_address"`
-	To              string `json:"to"`
-	Amount          string `json:"amount"`
+	ContractAddress     string `json:"contract_address"`
+	To                  string `json:"to"`
+	Amount              string `json:"amount"`
+	EncryptedPrivateKey string `json:"encrypted_private_key"`
 }
 
 // TransferTokenResponse represents the response from transferring tokens

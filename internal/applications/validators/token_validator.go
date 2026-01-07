@@ -50,6 +50,10 @@ func (v *tokenValidator) ValidateMintTokenRequest(req *dtos.MintTokenRequest) er
 		return errors.New("invalid amount format")
 	}
 
+	if req.EncryptedPrivateKey == "" {
+		return errors.New("encrypted_private_key is required")
+	}
+
 	return nil
 }
 
@@ -73,6 +77,10 @@ func (v *tokenValidator) ValidateBurnTokenRequest(req *dtos.BurnTokenRequest) er
 
 	if !isValidAmount(req.Amount) {
 		return errors.New("invalid amount format")
+	}
+
+	if req.EncryptedPrivateKey == "" {
+		return errors.New("encrypted_private_key is required")
 	}
 
 	return nil
@@ -106,6 +114,10 @@ func (v *tokenValidator) ValidateTransferTokenRequest(req *dtos.TransferTokenReq
 
 	if !isValidAmount(req.Amount) {
 		return errors.New("invalid amount format")
+	}
+
+	if req.EncryptedPrivateKey == "" {
+		return errors.New("encrypted_private_key is required")
 	}
 
 	return nil

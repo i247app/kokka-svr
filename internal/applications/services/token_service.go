@@ -8,23 +8,35 @@ import (
 	"kokka.com/kokka/internal/applications/dtos"
 	"kokka.com/kokka/internal/applications/validators"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
+	"kokka.com/kokka/internal/shared/utils/crypto"
 )
 
 // TokenService handles token business logic
 type TokenService struct {
-	validator validators.ITokenValidator
-	client    *blockchain.TokenClient
+	validator           validators.ITokenValidator
+	client              *blockchain.Client
+	decryptionKey       string
+	readOnlyTokenClient *blockchain.TokenClient
 }
 
 // NewTokenService creates a new token service
 func NewTokenService(
 	validator validators.ITokenValidator,
-	client *blockchain.TokenClient,
-) *TokenService {
-	return &TokenService{
-		validator: validator,
-		client:    client,
+	client *blockchain.Client,
+	decryptionKey string,
+) (*TokenService, error) {
+	// Create read-only token client for balance queries (no signer needed)
+	readOnlyClient, err := blockchain.NewTokenClient(client, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create read-only token client: %w", err)
 	}
+
+	return &TokenService{
+		validator:           validator,
+		client:              client,
+		decryptionKey:       decryptionKey,
+		readOnlyTokenClient: readOnlyClient,
+	}, nil
 }
 
 // Mint mints new tokens to a specified address
@@ -40,14 +52,32 @@ func (s *TokenService) Mint(ctx context.Context, req *dtos.MintTokenRequest) (*d
 		return nil, fmt.Errorf("failed to parse amount: %w", err)
 	}
 
+	// Decrypt private key
+	privateKey, err := crypto.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
+	}
+
+	// Create transaction signer
+	signer, err := blockchain.NewTransactionSigner(privateKey, s.client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create transaction signer: %w", err)
+	}
+
+	// Create token client
+	tokenClient, err := blockchain.NewTokenClient(s.client, signer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token client: %w", err)
+	}
+
 	// Execute mint transaction
-	txHash, err := s.client.Mint(ctx, req.ContractAddress, req.To, amount)
+	txHash, err := tokenClient.Mint(ctx, req.ContractAddress, req.To, amount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to mint tokens: %w", err)
 	}
 
 	// Query new balance (best effort - don't fail if balance query fails)
-	newBalance, err := s.client.BalanceOf(ctx, req.ContractAddress, req.To)
+	newBalance, err := tokenClient.BalanceOf(ctx, req.ContractAddress, req.To)
 	var newBalanceStr string
 	if err == nil && newBalance != nil {
 		newBalanceStr = newBalance.String()
@@ -62,7 +92,7 @@ func (s *TokenService) Mint(ctx context.Context, req *dtos.MintTokenRequest) (*d
 	}, nil
 }
 
-// Burn burns tokens from the server's account
+// Burn burns tokens from the caller's account
 func (s *TokenService) Burn(ctx context.Context, req *dtos.BurnTokenRequest) (*dtos.BurnTokenResponse, error) {
 	// Validate request
 	if err := s.validator.ValidateBurnTokenRequest(req); err != nil {
@@ -75,16 +105,36 @@ func (s *TokenService) Burn(ctx context.Context, req *dtos.BurnTokenRequest) (*d
 		return nil, fmt.Errorf("failed to parse amount: %w", err)
 	}
 
+	// Decrypt private key
+	privateKey, err := crypto.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
+	}
+
+	// Create transaction signer
+	signer, err := blockchain.NewTransactionSigner(privateKey, s.client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create transaction signer: %w", err)
+	}
+
+	// Create token client
+	tokenClient, err := blockchain.NewTokenClient(s.client, signer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token client: %w", err)
+	}
+
 	// Execute burn transaction
-	txHash, err := s.client.Burn(ctx, req.ContractAddress, amount)
+	txHash, err := tokenClient.Burn(ctx, req.ContractAddress, amount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to burn tokens: %w", err)
 	}
 
 	// Query new balance (best effort - don't fail if balance query fails)
-	// Note: We would need the server's address to query balance after burn
-	// For now, we'll leave it empty
+	newBalance, err := tokenClient.BalanceOf(ctx, req.ContractAddress, signer.GetAddress())
 	var newBalanceStr string
+	if err == nil && newBalance != nil {
+		newBalanceStr = newBalance.String()
+	}
 
 	return &dtos.BurnTokenResponse{
 		TxHash:          txHash,
@@ -107,8 +157,26 @@ func (s *TokenService) Transfer(ctx context.Context, req *dtos.TransferTokenRequ
 		return nil, fmt.Errorf("failed to parse amount: %w", err)
 	}
 
+	// Decrypt private key
+	privateKey, err := crypto.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
+	}
+
+	// Create transaction signer
+	signer, err := blockchain.NewTransactionSigner(privateKey, s.client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create transaction signer: %w", err)
+	}
+
+	// Create token client
+	tokenClient, err := blockchain.NewTokenClient(s.client, signer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token client: %w", err)
+	}
+
 	// Execute transfer transaction
-	txHash, err := s.client.Transfer(ctx, req.ContractAddress, req.To, amount)
+	txHash, err := tokenClient.Transfer(ctx, req.ContractAddress, req.To, amount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to transfer tokens: %w", err)
 	}
@@ -116,6 +184,7 @@ func (s *TokenService) Transfer(ctx context.Context, req *dtos.TransferTokenRequ
 	return &dtos.TransferTokenResponse{
 		TxHash:          txHash,
 		ContractAddress: req.ContractAddress,
+		From:            signer.GetAddress(),
 		To:              req.To,
 		Amount:          amount.String(),
 	}, nil
@@ -128,8 +197,8 @@ func (s *TokenService) GetBalance(ctx context.Context, req *dtos.GetTokenBalance
 		return nil, err
 	}
 
-	// Query balance
-	balance, err := s.client.BalanceOf(ctx, req.ContractAddress, req.Address)
+	// Query balance using read-only client (no signing required)
+	balance, err := s.readOnlyTokenClient.BalanceOf(ctx, req.ContractAddress, req.Address)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get balance: %w", err)
 	}

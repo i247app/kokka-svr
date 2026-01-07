@@ -64,8 +64,8 @@ func NewEnv(envpath string) (*Env, error) {
 			Bucket:    getConfig("S3_BUCKET"),
 		},
 		BlockchainConfig: &BlockchainConfig{
-			RPCURL:     getConfigWithDefault("BLOCKCHAIN_RPC_URL", "https://x24.i247.com"),
-			PrivateKey: getConfig("BLOCKCHAIN_PRIVATE_KEY"),
+			RPCURL:        getConfigWithDefault("BLOCKCHAIN_RPC_URL", "https://x24.i247.com"),
+			DecryptionKey: getConfig("DECRYPTION_KEY"),
 		},
 		SharedKeyBytes:        getFileBytesConfig("GEX_SHARED_KEY"),
 		GexSessionDriver:      getConfig("GEX_SESSION_DRIVER"),
