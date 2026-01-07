@@ -150,7 +150,7 @@ func (s *BlockchainService) CallContract(ctx context.Context, req *dtos.CallCont
 		block = "latest"
 	}
 
-	result, err := s.client.CallContract(ctx, req.To, req.Value, block)
+	result, err := s.client.CallContract(ctx, req.To, req.Data, block)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call contract: %w", err)
 	}

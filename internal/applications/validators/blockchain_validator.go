@@ -94,11 +94,11 @@ func (v *blockchainValidator) ValidateCallContractRequest(req *dtos.CallContract
 		return errors.New("invalid to address format")
 	}
 
-	if req.Value == "" {
+	if req.Data == "" {
 		return errors.New("data is required")
 	}
 
-	if !isValidHexData(req.Value) {
+	if !isValidHexData(req.Data) {
 		return errors.New("invalid data format (must be hex string with 0x prefix)")
 	}
 

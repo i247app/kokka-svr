@@ -125,11 +125,16 @@ func (c *Client) GetBlockByNumber(ctx context.Context, blockNumber string, fullT
 }
 
 // CallContract calls a contract method (read-only)
-func (c *Client) CallContract(ctx context.Context, to string, value string, block string) (string, error) {
+func (c *Client) CallContract(ctx context.Context, to string, data string, block string) (string, error) {
 	callObject := map[string]interface{}{
-		"to":    to,
-		"value": value,
+		"to": to,
 	}
+
+	// Only add data if it's not empty
+	if data != "" && data != "0x" {
+		callObject["data"] = data
+	}
+
 	params := []interface{}{callObject, block}
 
 	resp, err := c.Call(ctx, "eth_call", params)
@@ -152,6 +157,38 @@ func (c *Client) EstimateGas(ctx context.Context, from, to, value string) (strin
 		"to":    to,
 		"value": value,
 	}
+	params := []interface{}{txObject}
+
+	resp, err := c.Call(ctx, "eth_estimateGas", params)
+	if err != nil {
+		return "", fmt.Errorf("failed to estimate gas: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse gas estimate: %w", err)
+	}
+
+	return result, nil
+}
+
+// EstimateGasWithData estimates gas for a transaction with contract data
+func (c *Client) EstimateGasWithData(ctx context.Context, from, to, value, data string) (string, error) {
+	txObject := map[string]interface{}{
+		"from": from,
+		"to":   to,
+	}
+
+	// Only add value if it's not empty
+	if value != "" && value != "0x0" && value != "0x" {
+		txObject["value"] = value
+	}
+
+	// Only add data if it's not empty
+	if data != "" && data != "0x" {
+		txObject["data"] = data
+	}
+
 	params := []interface{}{txObject}
 
 	resp, err := c.Call(ctx, "eth_estimateGas", params)

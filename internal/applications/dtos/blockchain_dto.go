@@ -20,7 +20,7 @@ type GetTransactionRequest struct {
 // CallContractRequest represents a request to call a contract method (read-only)
 type CallContractRequest struct {
 	To    string `json:"to"`
-	Value string `json:"value"`
+	Data  string `json:"data"`            // Contract call data (hex string)
 	Block string `json:"block,omitempty"` // Optional, defaults to "latest"
 }
 
