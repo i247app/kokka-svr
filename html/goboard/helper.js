@@ -1,7 +1,7 @@
 // Configuration
 const DECRYPTION_KEY = "KOK_EVM_ENCRYPTED_8888";
-const API_BASE_URL = "https://m1.i247.com/kokka"; // Update this to your server URL
-// const API_BASE_URL = "http://localhost:8080"; // Update this to your server URL
+// const API_BASE_URL = "https://m1.i247.com/kokka"; // Update this to your server URL
+const API_BASE_URL = "http://localhost:8080"; // Update this to your server URL
 
 // Contract addresses
 const CONTRACTS = {
