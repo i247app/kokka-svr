@@ -81,8 +81,18 @@ func (m *requestLoggerMiddleware) Handle(next http.Handler) http.Handler {
 			}
 		}
 
+		wrapper := m.newResponseWrapper(w)
 		next.ServeHTTP(w, r)
+
+		log.InfofWithBgColor(logger.BgYellow, "%s", wrapper.body.String())
 	})
+}
+
+func (m *requestLoggerMiddleware) newResponseWrapper(w http.ResponseWriter) *responseWriterWrapper {
+	return &responseWriterWrapper{
+		ResponseWriter: w,
+		body:           bytes.NewBuffer(nil),
+	}
 }
 
 func (m *requestLoggerMiddleware) nextRequestID() int64 {
@@ -118,4 +128,13 @@ func (m *requestLoggerMiddleware) decodeBodyToMap(body []byte) map[string]any {
 	result := map[string]any{}
 	_ = json.Unmarshal(body, &result)
 	return result
+}
+
+func (m *requestLoggerMiddleware) outboundMessage(r *http.Request, wrapper *responseWriterWrapper) string {
+	if strings.Contains(wrapper.Header().Get("Content-Type"), "application/json") {
+		return fmt.Sprintf("OUT %v %v: %v", r.Method, r.URL.Path, wrapper.body.String())
+	}
+
+	inMsg := fmt.Sprintf("IN %v %v", r.Method, r.URL.Path)
+	return inMsg
 }

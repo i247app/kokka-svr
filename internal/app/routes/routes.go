@@ -8,7 +8,6 @@ import (
 )
 
 func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *services.ServiceContainer) {
-
 	// blockchain routes
 	bc := controller.NewBlockchainController(services.BlockchainService)
 	// GET endpoints
