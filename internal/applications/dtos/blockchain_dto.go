@@ -102,3 +102,37 @@ type GetChainIDResponse struct {
 type GenericRPCResponse struct {
 	Result interface{} `json:"result"`
 }
+
+// SignAndMintRequest represents the request for minting tokens
+type SignAndMintRequest struct {
+	PrivateKey      string `json:"private_key"`
+	ContractAddress string `json:"contract_address"`
+	Data            []byte `json:"data,omitempty"`
+}
+
+// BurnTokenRequest represents the request for burning tokens
+type SignAndBurnRequest struct {
+	PrivateKey      string `json:"private_key"`
+	ContractAddress string `json:"contract_address"`
+	Data            []byte `json:"data,omitempty"`
+}
+
+// SignAndMintResponse represents the response for minting tokens
+type SignAndMintResponse struct {
+	TxHash string `json:"tx_hash"` // Transaction hash of the minting operation
+}
+
+// SignAndBurnResponse represents the response for burning tokens
+type SignAndBurnResponse struct {
+	TxHash string `json:"tx_hash"` // Transaction hash of the burning operation
+}
+
+type SignAndSendTransactionRequest struct {
+	PrivateKey      string `json:"private_key"`
+	ContractAddress string `json:"contract_address"`
+	Data            string `json:"data,omitempty"`
+}
+
+type SignAndSendTransactionResponse struct {
+	TxHash string `json:"tx_hash"`
+}

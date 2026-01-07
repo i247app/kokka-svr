@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 
@@ -170,5 +171,42 @@ func (s *BlockchainService) GenericRPCCall(ctx context.Context, req *dtos.Generi
 
 	return &dtos.GenericRPCResponse{
 		Result: result,
+	}, nil
+}
+
+func (s *BlockchainService) SignAndMint(ctx context.Context, req *dtos.SignAndMintRequest) (*dtos.SignAndMintResponse, error) {
+	txHash, err := s.client.SignAndMint(ctx, req.PrivateKey, req.ContractAddress, req.Data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign and send transaction: %w", err)
+	}
+
+	return &dtos.SignAndMintResponse{
+		TxHash: txHash,
+	}, nil
+}
+
+func (s *BlockchainService) SignAndBurn(ctx context.Context, req *dtos.SignAndBurnRequest) (*dtos.SignAndBurnResponse, error) {
+	txHash, err := s.client.SignAndBurn(ctx, req.PrivateKey, req.ContractAddress, req.Data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign and send transaction: %w", err)
+	}
+
+	return &dtos.SignAndBurnResponse{
+		TxHash: txHash,
+	}, nil
+}
+
+func (s *BlockchainService) SignAndSendTransaction(ctx context.Context, req *dtos.SignAndSendTransactionRequest) (*dtos.SignAndSendTransactionResponse, error) {
+	data, err := hex.DecodeString(req.Data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode data: %w", err)
+	}
+	txHash, err := s.client.SignAndSendTransaction(ctx, req.PrivateKey, req.ContractAddress, data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign and send transaction: %w", err)
+	}
+
+	return &dtos.SignAndSendTransactionResponse{
+		TxHash: txHash,
 	}, nil
 }

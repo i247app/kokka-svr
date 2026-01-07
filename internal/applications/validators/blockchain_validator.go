@@ -213,3 +213,39 @@ func isValidBlockParameter(block string) bool {
 
 	return false
 }
+
+// ValidateSignAndMintRequest validates a sign and mint request
+func ValidateSignAndMintRequest(req *dtos.SignAndMintRequest) error {
+	if req == nil {
+		return errors.New("request cannot be nil")
+	}
+
+	return nil
+}
+
+// ValidateSignAndBurnRequest validates a sign and burn request
+func ValidateSignAndBurnRequest(req *dtos.SignAndBurnRequest) error {
+	if req == nil {
+		return errors.New("request cannot be nil")
+	}
+
+	return nil
+}
+
+// ValidateSignAndSendTransactionRequest validates a sign and send transaction request
+func ValidateSignAndSendTransactionRequest(req *dtos.SignAndSendTransactionRequest) error {
+	if req == nil {
+		return errors.New("request cannot be nil")
+	}
+	if req.PrivateKey == "" {
+		return errors.New("private_key is required")
+	}
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
+	if !isValidEthereumAddress(req.ContractAddress) {
+		return errors.New("invalid contract_address format")
+	}
+
+	return nil
+}

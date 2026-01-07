@@ -1,10 +1,20 @@
 package blockchain
 
 import (
+	"bytes"
 	"context"
+	"crypto/ecdsa"
+	"encoding/json"
 	"fmt"
+	"log"
+	"math/big"
+	"strconv"
+	"strings"
 	"sync/atomic"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
+	"kokka.com/kokka/internal/driven-adapter/external/provider/sign"
 	"kokka.com/kokka/internal/shared/http_client"
 )
 
@@ -170,6 +180,7 @@ func (c *Client) EstimateGas(ctx context.Context, from, to, value string) (strin
 // SendRawTransaction broadcasts a signed transaction
 func (c *Client) SendRawTransaction(ctx context.Context, signedTx string) (string, error) {
 	params := []interface{}{signedTx}
+
 	resp, err := c.Call(ctx, "eth_sendRawTransaction", params)
 	if err != nil {
 		return "", fmt.Errorf("failed to send transaction: %w", err)
@@ -208,6 +219,306 @@ func (c *Client) GetChainID(ctx context.Context) (string, error) {
 	result, err := resp.GetResultAsString()
 	if err != nil {
 		return "", fmt.Errorf("failed to parse chain ID: %w", err)
+	}
+
+	return result, nil
+}
+
+// GetLatestNonce retrieves the latest nonce for an address
+func (c *Client) GetLatestNonce(
+	ctx context.Context,
+	privateKeyHex string,
+) (uint64, error) {
+
+	pkHex := strings.TrimPrefix(privateKeyHex, "0x")
+
+	privateKey, err := crypto.HexToECDSA(pkHex)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("cannot cast public key to ECDSA")
+	}
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+
+	resp, err := c.Call(
+		ctx,
+		"eth_getTransactionCount",
+		[]interface{}{fromAddress, "latest"},
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	var hexNonce string
+	if err := json.Unmarshal(resp.Result, &hexNonce); err != nil {
+		return 0, err
+	}
+
+	nonce, err := strconv.ParseUint(
+		strings.TrimPrefix(hexNonce, "0x"),
+		16,
+		64,
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	return nonce, nil
+}
+
+// GetEstimatedGasPrice estimates gas for a transaction
+func (c *Client) GetEstimatedGasPrice(ctx context.Context, from string, to string, nonce uint64, value *big.Int, data []byte) (*big.Int, error) {
+
+	pkHex := strings.TrimPrefix(from, "0x")
+	privKey, err := crypto.HexToECDSA(pkHex)
+	if err != nil {
+		log.Fatal(err)
+	}
+	pubKey := privKey.Public()
+	pubKeyECDSA, ok := pubKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("cannot cast public key to ECDSA")
+	}
+
+	fromAddr := crypto.PubkeyToAddress(*pubKeyECDSA).Hex()
+
+	hexNonce := hexutil.EncodeUint64(nonce)
+	valueHex := hexutil.EncodeBig(value)
+	txObject := map[string]interface{}{
+		"from":  fromAddr,
+		"to":    to,
+		"nonce": hexNonce,
+		"value": valueHex,
+		"data":  data,
+	}
+	params := []interface{}{txObject}
+
+	resp, err := c.Call(ctx, "eth_estimateGas", params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to estimate gas: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse gas estimate: %w", err)
+	}
+
+	resultAsInt, ok := new(big.Int).SetString(result[2:], 16)
+	if !ok {
+		log.Fatal("fail to convert gas estimate to big.Int")
+	}
+
+	return resultAsInt, nil
+}
+
+// SignAndSendTransaction signs and sends a transaction
+func (c *Client) SignAndSendTransaction(ctx context.Context, privateKey string, contractAddress string, data []byte) (string, error) {
+
+	// Get chain ID
+	chain_id, err := c.GetChainID(ctx)
+	if err != nil {
+		log.Fatal("fail to get chain id")
+	}
+
+	// Get latest nonce
+	nonce, err := c.GetLatestNonce(
+		ctx,
+		privateKey,
+	)
+	if err != nil {
+		log.Fatal("fail to get latest nonce")
+	}
+
+	// Calculate gas price
+	gasPriceEstimated, err := c.GetEstimatedGasPrice(ctx, privateKey, contractAddress, nonce, big.NewInt(0), data)
+	if err != nil {
+		log.Fatal("fail to estimate gas")
+	}
+
+	// Sign transaction
+	sign_params := sign.SignTxParams{
+		ChainID:    chain_id,
+		PrivateKey: privateKey,
+		Nonce:      nonce,
+		To:         contractAddress,
+		Value:      big.NewInt(0),
+		Data:       data,
+		GasLimit:   21000,
+		GasPrice:   gasPriceEstimated,
+	}
+
+	signedTx, err := sign.SignTx(sign_params)
+	if err != nil {
+		return "", err
+	}
+
+	var buff bytes.Buffer
+
+	if err := signedTx.EncodeRLP(&buff); err != nil {
+		log.Fatal(err)
+	}
+
+	rawBytes := buff.Bytes()
+	rawHex := hexutil.Encode(rawBytes)
+
+	params := []interface{}{rawHex}
+
+	resp, err := c.Call(ctx, "eth_sendRawTransaction", params)
+	if err != nil {
+		return "", fmt.Errorf("failed to send transaction: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse transaction hash: %w", err)
+	}
+
+	return result, nil
+}
+
+// SignAndMint signs and sends a minting transaction
+func (c *Client) SignAndMint(ctx context.Context, privateKey string, contractAddress string, data []byte) (string, error) {
+
+	// Get chain ID
+	chain_id, err := c.GetChainID(ctx)
+	if err != nil {
+		log.Fatal("fail to get chain id")
+	}
+
+	// Get latest nonce
+	nonce, err := c.GetLatestNonce(
+		ctx,
+		privateKey,
+	)
+	if err != nil {
+		log.Fatal("fail to get latest nonce")
+	}
+
+	// Derive sender address from private key for estimation
+	pkHex := strings.TrimPrefix(privateKey, "0x")
+	privKey, err := crypto.HexToECDSA(pkHex)
+	if err != nil {
+		log.Fatal(err)
+	}
+	pubKey := privKey.Public()
+	pubKeyECDSA, ok := pubKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("cannot cast public key to ECDSA")
+	}
+	fromAddr := crypto.PubkeyToAddress(*pubKeyECDSA).Hex()
+
+	// Calculate gas price
+	gasPriceEstimated, err := c.GetEstimatedGasPrice(ctx, fromAddr, contractAddress, nonce, big.NewInt(2e18), data)
+	if err != nil {
+		log.Fatal("fail to estimate gas")
+	}
+
+	// Sign transaction
+	sign_params := sign.SignTxParams{
+		ChainID:    chain_id,
+		PrivateKey: privateKey,
+		Nonce:      nonce,
+		To:         contractAddress,
+		Value:      big.NewInt(0),
+		Data:       data,
+		GasLimit:   21000,
+		GasPrice:   gasPriceEstimated,
+	}
+
+	signedTx, err := sign.SignTx(sign_params)
+	if err != nil {
+		return "", err
+	}
+
+	var buff bytes.Buffer
+
+	if err := signedTx.EncodeRLP(&buff); err != nil {
+		log.Fatal(err)
+	}
+
+	rawBytes := buff.Bytes()
+	rawHex := hexutil.Encode(rawBytes)
+
+	params := []interface{}{rawHex}
+
+	resp, err := c.Call(ctx, "eth_sendRawTransaction", params)
+	if err != nil {
+		return "", fmt.Errorf("failed to send transaction: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse transaction hash: %w", err)
+	}
+
+	return result, nil
+}
+
+// SignAndBurn signs and sends a burning transaction
+func (c *Client) SignAndBurn(ctx context.Context, privateKey string, contractAddress string, data []byte) (string, error) {
+
+	// Get chain ID
+	chain_id, err := c.GetChainID(ctx)
+	if err != nil {
+		log.Fatal("fail to get chain id")
+	}
+
+	// Get latest nonce
+	nonce, err := c.GetLatestNonce(
+		ctx,
+		privateKey,
+	)
+	if err != nil {
+		log.Fatal("fail to get latest nonce")
+	}
+
+	// Calculate gas price
+	gasPriceEstimated, err := c.GetEstimatedGasPrice(ctx, privateKey, contractAddress, nonce, big.NewInt(2e18), data)
+	if err != nil {
+		log.Fatal("fail to estimate gas")
+	}
+
+	// Sign transaction
+	sign_params := sign.SignTxParams{
+		ChainID:    chain_id,
+		PrivateKey: privateKey,
+		Nonce:      nonce,
+		To:         contractAddress,
+		Value:      big.NewInt(0),
+		Data:       data,
+		GasLimit:   21000,
+		GasPrice:   gasPriceEstimated,
+	}
+
+	signedTx, err := sign.SignTx(sign_params)
+	if err != nil {
+		return "", err
+	}
+
+	var buff bytes.Buffer
+
+	if err := signedTx.EncodeRLP(&buff); err != nil {
+		log.Fatal(err)
+	}
+
+	rawBytes := buff.Bytes()
+	rawHex := hexutil.Encode(rawBytes)
+
+	params := []interface{}{rawHex}
+
+	resp, err := c.Call(ctx, "eth_sendRawTransaction", params)
+	if err != nil {
+		return "", fmt.Errorf("failed to send transaction: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse transaction hash: %w", err)
 	}
 
 	return result, nil

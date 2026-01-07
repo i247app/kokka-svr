@@ -254,3 +254,79 @@ func (c *BlockchainController) GenericRPCCall(w http.ResponseWriter, r *http.Req
 
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
+
+// MintToken handles POST /blockchain/mint
+func (c *BlockchainController) MintToken(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req dtos.SignAndMintRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, r.Context(), nil, fmt.Errorf("invalid parameters"), status.FAIL)
+		return
+	}
+
+	// Validate request
+	if err := validators.ValidateSignAndMintRequest(&req); err != nil {
+		response.WriteJson(w, ctx, nil, err, status.FAIL)
+		return
+	}
+
+	// Call service
+	result, err := c.blockchainService.SignAndMint(ctx, &req)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.OK)
+}
+
+// BurnToken handles POST /blockchain/burn
+func (c *BlockchainController) BurnToken(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req dtos.SignAndBurnRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, r.Context(), nil, fmt.Errorf("invalid parameters"), status.FAIL)
+		return
+	}
+
+	// Validate request
+	if err := validators.ValidateSignAndBurnRequest(&req); err != nil {
+		response.WriteJson(w, ctx, nil, err, status.FAIL)
+		return
+	}
+
+	// Call service
+	result, err := c.blockchainService.SignAndBurn(ctx, &req)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.OK)
+}
+
+// SignAndSendTransaction handles POST /blockchain/sign-and-send-transaction
+func (c *BlockchainController) SignAndSendTransaction(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req dtos.SignAndSendTransactionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, r.Context(), nil, fmt.Errorf("invalid parameters"), status.FAIL)
+		return
+	}
+
+	// Validate request
+	if err := validators.ValidateSignAndSendTransactionRequest(&req); err != nil {
+		response.WriteJson(w, ctx, nil, err, status.FAIL)
+		return
+	}
+
+	result, err := c.blockchainService.SignAndSendTransaction(ctx, &req)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+	response.WriteJson(w, ctx, result, nil, status.OK)
+}
