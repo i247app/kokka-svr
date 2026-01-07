@@ -143,7 +143,6 @@ type AddressInfoResponse struct {
 
 // AddressInfo retrieves basic information about the token contract at the given address
 func (v *TokenClient) AddressInfo(ctx context.Context, address string) (*AddressInfoResponse, error) {
-
 	// ERC20 ABI
 	const erc20ABI = `[
   		{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"type":"function"},

@@ -82,9 +82,11 @@ func (m *requestLoggerMiddleware) Handle(next http.Handler) http.Handler {
 		}
 
 		wrapper := m.newResponseWrapper(w)
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(wrapper, r)
 
 		log.InfofWithBgColor(logger.BgYellow, "%s", wrapper.body.String())
+
+		m.flushResponse(w, wrapper)
 	})
 }
 
@@ -130,11 +132,9 @@ func (m *requestLoggerMiddleware) decodeBodyToMap(body []byte) map[string]any {
 	return result
 }
 
-func (m *requestLoggerMiddleware) outboundMessage(r *http.Request, wrapper *responseWriterWrapper) string {
-	if strings.Contains(wrapper.Header().Get("Content-Type"), "application/json") {
-		return fmt.Sprintf("OUT %v %v: %v", r.Method, r.URL.Path, wrapper.body.String())
+func (m *requestLoggerMiddleware) flushResponse(w http.ResponseWriter, wrapper *responseWriterWrapper) {
+	if wrapper.statusCode != 0 {
+		w.WriteHeader(wrapper.statusCode)
 	}
-
-	inMsg := fmt.Sprintf("IN %v %v", r.Method, r.URL.Path)
-	return inMsg
+	_, _ = w.Write(wrapper.body.Bytes())
 }

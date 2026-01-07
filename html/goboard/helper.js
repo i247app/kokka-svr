@@ -1,6 +1,27 @@
 // Configuration
 const DECRYPTION_KEY = "KOK_EVM_ENCRYPTED_8888";
-const API_BASE_URL = "https://m1.i247.com/kokka"; // Update this to your server URL
+const API_BASE_URL = "http://localhost:8080"; // Update this to your server URL
+
+// Contract addresses
+const CONTRACTS = {
+  vndx: {
+    name: "VNDX",
+    address: "0x329aaF4e8d9883c6F8610D48172DE9c6C0917ecD",
+    icon: "🇻🇳",
+  },
+  sgpx: {
+    name: "SGPX",
+    address: "0x6245000F860feba4619622FAF8c1eB7968cc91D3",
+    icon: "🇸🇬",
+  },
+  yenx: {
+    name: "YENX",
+    address: "0xbae0597019221Fd8DB7069725F5b93B047D85a89",
+    icon: "🇯🇵",
+  },
+};
+
+console.log("Helper JS loaded", { DECRYPTION_KEY, API_BASE_URL });
 
 // Encrypt private key using CryptoJS (matches server's DecryptCrypto function)
 function encryptPrivateKey(privateKey) {
@@ -88,7 +109,7 @@ function setLoading(button, loading) {
   }
 }
 
-// Tab switching
+// Tab switching for operations
 document.querySelectorAll(".tab-button").forEach((button) => {
   button.addEventListener("click", () => {
     const tabName = button.getAttribute("data-tab");
@@ -104,6 +125,95 @@ document.querySelectorAll(".tab-button").forEach((button) => {
       .querySelectorAll(".tab-content")
       .forEach((content) => content.classList.remove("active"));
     document.getElementById(`${tabName}-tab`).classList.add("active");
+  });
+});
+
+// Load contract information
+async function loadContractInfo(contractKey) {
+  const contract = CONTRACTS[contractKey];
+  const boxElement = document.getElementById(`${contractKey}-contract`);
+  const loadingElement = boxElement.querySelector(".contract-loading");
+  const dataElement = boxElement.querySelector(".contract-data");
+  const errorElement = boxElement.querySelector(".contract-error");
+
+  try {
+    // Show loading
+    loadingElement.style.display = "flex";
+    dataElement.style.display = "none";
+    errorElement.style.display = "none";
+
+    // Call API
+    const result = await apiCall("/token/contract-address-info", "POST", {
+      contract_address: contract.address,
+    });
+
+    // Hide loading
+    loadingElement.style.display = "none";
+
+    // Display data
+    dataElement.style.display = "block";
+    dataElement.innerHTML = generateContractInfoHTML(result, contract);
+  } catch (error) {
+    // Hide loading
+    loadingElement.style.display = "none";
+
+    // Show error
+    errorElement.style.display = "block";
+    errorElement.innerHTML = `
+      <h3>❌ Error</h3>
+      <p>${error.message}</p>
+    `;
+  }
+}
+
+// Generate HTML for contract information
+function generateContractInfoHTML(data, contract) {
+  let html = "";
+
+  // Create rows for each data field
+  const fields = [
+    { key: "address", label: "📍 Address", value: contract.address },
+    { key: "name", label: "📛 Name", value: data.name },
+    { key: "symbol", label: "🔤 Symbol", value: data.symbol },
+    { key: "decimals", label: "🔢 Decimals", value: data.decimals },
+    { key: "total_supply", label: "💰 Total Supply", value: data.total_supply },
+    {
+      key: "owner_address",
+      label: "👤 Owner",
+      value: data.owner_address,
+    },
+    {
+      key: "owner_balance",
+      label: "💵 Owner Balance",
+      value: data.owner_balance,
+    },
+  ];
+
+  fields.forEach((field) => {
+    if (
+      field.value !== undefined &&
+      field.value !== null &&
+      field.value !== ""
+    ) {
+      html += `
+        <div class="contract-info-row">
+          <div class="contract-info-label">${field.label}</div>
+          <div class="contract-info-value">${field.value}</div>
+        </div>
+      `;
+    }
+  });
+
+  return html;
+}
+
+// Load all contract information on page load
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("Loading contract information...");
+
+  // Load info for all contracts
+  Object.keys(CONTRACTS).forEach((contractKey) => {
+    loadContractInfo(contractKey);
   });
 });
 
@@ -232,12 +342,10 @@ document
       const address = document.getElementById("balance-address").value.trim();
 
       // Call API (GET request with query parameters)
-      const result = await apiCall(
-        `/token/balance?contract_address=${encodeURIComponent(
-          contractAddress
-        )}&address=${encodeURIComponent(address)}`,
-        "GET"
-      );
+      const result = await apiCall("/token/balance", "POST", {
+        contract_address: contractAddress,
+        address: address,
+      });
 
       showResult("balance-result", true, result);
     } catch (error) {

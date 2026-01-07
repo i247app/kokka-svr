@@ -69,7 +69,7 @@ func (c *TokenController) HandleBurnToken(w http.ResponseWriter, r *http.Request
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// HandleGetTokenBalance handles GET /token/balance
+// HandleGetTokenBalance handles POST /token/balance
 func (c *TokenController) HandleGetTokenBalance(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -78,25 +78,13 @@ func (c *TokenController) HandleGetTokenBalance(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	// Get parameters from query
-	contractAddress := r.URL.Query().Get("contract_address")
-	if contractAddress == "" {
-		response.WriteJson(w, ctx, nil, fmt.Errorf("contract_address parameter is required"), status.FAIL)
+	var req dtos.GetTokenBalanceRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, ctx, nil, fmt.Errorf("invalid parameters"), status.FAIL)
 		return
 	}
 
-	address := r.URL.Query().Get("address")
-	if address == "" {
-		response.WriteJson(w, ctx, nil, fmt.Errorf("address parameter is required"), status.FAIL)
-		return
-	}
-
-	req := &dtos.GetTokenBalanceRequest{
-		ContractAddress: contractAddress,
-		Address:         address,
-	}
-
-	result, err := c.tokenService.GetBalance(ctx, req)
+	result, err := c.tokenService.GetBalance(ctx, &req)
 	if err != nil {
 		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
 		return

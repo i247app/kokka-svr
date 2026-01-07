@@ -76,19 +76,19 @@ func (s *TokenService) Mint(ctx context.Context, req *dtos.MintTokenRequest) (*d
 		return nil, fmt.Errorf("failed to mint tokens: %w", err)
 	}
 
-	// Query new balance (best effort - don't fail if balance query fails)
-	newBalance, err := tokenClient.BalanceOf(ctx, req.ContractAddress, req.To)
-	var newBalanceStr string
-	if err == nil && newBalance != nil {
-		newBalanceStr = newBalance.String()
-	}
+	// // Query new balance (best effort - don't fail if balance query fails)
+	// newBalance, err := tokenClient.BalanceOf(ctx, req.ContractAddress, req.To)
+	// var newBalanceStr string
+	// if err == nil && newBalance != nil {
+	// 	newBalanceStr = newBalance.String()
+	// }
 
 	return &dtos.MintTokenResponse{
 		TxHash:          txHash,
 		ContractAddress: req.ContractAddress,
 		To:              req.To,
 		Amount:          amount.String(),
-		NewBalance:      newBalanceStr,
+		// NewBalance:      newBalanceStr,
 	}, nil
 }
 
@@ -129,18 +129,18 @@ func (s *TokenService) Burn(ctx context.Context, req *dtos.BurnTokenRequest) (*d
 		return nil, fmt.Errorf("failed to burn tokens: %w", err)
 	}
 
-	// Query new balance (best effort - don't fail if balance query fails)
-	newBalance, err := tokenClient.BalanceOf(ctx, req.ContractAddress, signer.GetAddress())
-	var newBalanceStr string
-	if err == nil && newBalance != nil {
-		newBalanceStr = newBalance.String()
-	}
+	// // Query new balance (best effort - don't fail if balance query fails)
+	// newBalance, err := tokenClient.BalanceOf(ctx, req.ContractAddress, signer.GetAddress())
+	// var newBalanceStr string
+	// if err == nil && newBalance != nil {
+	// 	newBalanceStr = newBalance.String()
+	// }
 
 	return &dtos.BurnTokenResponse{
 		TxHash:          txHash,
 		ContractAddress: req.ContractAddress,
 		Amount:          amount.String(),
-		NewBalance:      newBalanceStr,
+		// NewBalance:      newBalanceStr,
 	}, nil
 }
 
