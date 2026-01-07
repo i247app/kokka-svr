@@ -3,7 +3,6 @@ package validators
 import (
 	"errors"
 	"math/big"
-	"strings"
 
 	"kokka.com/kokka/internal/applications/dtos"
 )
@@ -137,28 +136,15 @@ func (v *tokenValidator) ValidateGetTokenBalanceRequest(req *dtos.GetTokenBalanc
 	return nil
 }
 
-// ========================================
-// Helper validation functions
-// ========================================
-
-// isValidAmount checks if a string is a valid token amount (decimal string or hex)
+// isValidAmount checks if a string is a valid token amount (decimal number like "2" or "2.5")
 func isValidAmount(amount string) bool {
-	// Allow hex format (0x prefix)
-	if strings.HasPrefix(amount, "0x") {
-		if len(amount) == 2 {
-			return false // Just "0x" is not valid
-		}
-		return isValidHex(amount[2:])
-	}
-
-	// Allow decimal format (positive integer)
-	_, ok := new(big.Int).SetString(amount, 10)
+	// Parse as floating point number
+	amountFloat := new(big.Float)
+	_, ok := amountFloat.SetString(amount)
 	if !ok {
 		return false
 	}
 
 	// Ensure amount is positive
-	amountBig := new(big.Int)
-	amountBig.SetString(amount, 10)
-	return amountBig.Cmp(big.NewInt(0)) > 0
+	return amountFloat.Cmp(big.NewFloat(0)) > 0
 }

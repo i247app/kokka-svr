@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"strings"
 
 	"kokka.com/kokka/internal/applications/dtos"
 	"kokka.com/kokka/internal/applications/validators"
@@ -142,29 +141,30 @@ func (s *TokenService) GetBalance(ctx context.Context, req *dtos.GetTokenBalance
 	}, nil
 }
 
-// ========================================
-// Helper functions
-// ========================================
-
-// parseAmount parses an amount string (decimal or hex) to *big.Int
+// parseAmount parses an amount string and converts token units to wei (multiplies by 10^18)
+// Input: "2" or "2.5" (token units)
+// Output: big.Int representing wei (e.g., "2" -> 2000000000000000000)
 func parseAmount(amount string) (*big.Int, error) {
-	result := new(big.Int)
-
-	// Handle hex format (0x prefix)
-	if strings.HasPrefix(amount, "0x") {
-		// Remove 0x prefix and parse as hex
-		_, ok := result.SetString(amount[2:], 16)
-		if !ok {
-			return nil, fmt.Errorf("invalid hex amount: %s", amount)
-		}
-		return result, nil
-	}
-
-	// Handle decimal format
-	_, ok := result.SetString(amount, 10)
+	// Parse the amount as a floating point number
+	amountFloat := new(big.Float)
+	_, ok := amountFloat.SetString(amount)
 	if !ok {
-		return nil, fmt.Errorf("invalid decimal amount: %s", amount)
+		return nil, fmt.Errorf("invalid amount format: %s", amount)
 	}
 
-	return result, nil
+	// Check if amount is positive
+	if amountFloat.Cmp(big.NewFloat(0)) <= 0 {
+		return nil, fmt.Errorf("amount must be positive: %s", amount)
+	}
+
+	// Multiply by 10^18 to convert to wei (18 decimals for ERC20 tokens)
+	decimals := new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
+	decimalFloat := new(big.Float).SetInt(decimals)
+	weiFloat := new(big.Float).Mul(amountFloat, decimalFloat)
+
+	// Convert to big.Int (truncate any remaining decimals)
+	weiInt := new(big.Int)
+	weiFloat.Int(weiInt)
+
+	return weiInt, nil
 }
