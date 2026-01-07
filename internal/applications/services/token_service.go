@@ -237,3 +237,26 @@ func parseAmount(amount string) (*big.Int, error) {
 
 	return weiInt, nil
 }
+
+// GetAddressInfo retrieves basic information about the token contract at the given address
+func (s *TokenService) GetAddressInfo(ctx context.Context, req *dtos.GetAddressInfoRequest) (*dtos.GetAddressInfoResponse, error) {
+	// Validate request
+	if err := s.validator.ValidateGetAddressInfoRequest(req); err != nil {
+		return nil, err
+	}
+
+	// Query address info using read-only client (no signing required)
+	info, err := s.readOnlyTokenClient.AddressInfo(ctx, req.ContractAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get address info: %w", err)
+	}
+
+	return &dtos.GetAddressInfoResponse{
+		Name:         info.Name,
+		Symbol:       info.Symbol,
+		Decimals:     info.Decimals,
+		TotalSupply:  info.TotalSupply,
+		OwnerAddress: info.OwnerAddress,
+		OwnerBalance: info.OwnerBalance,
+	}, nil
+}

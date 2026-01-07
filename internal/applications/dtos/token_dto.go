@@ -61,3 +61,18 @@ type GetTokenBalanceResponse struct {
 	Address         string `json:"address"`
 	Balance         string `json:"balance"`
 }
+
+// GetAddressInfoRequest represents a request to get token contract address info
+type GetAddressInfoRequest struct {
+	ContractAddress string `json:"contract_address"`
+}
+
+// GetAddressInfoResponse represents the response with token contract address info
+type GetAddressInfoResponse struct {
+	Name         string `json:"name"`
+	Symbol       string `json:"symbol"`
+	Decimals     uint8  `json:"decimals"`
+	TotalSupply  string `json:"total_supply"`
+	OwnerAddress string `json:"owner_address"`
+	OwnerBalance string `json:"owner_balance"`
+}

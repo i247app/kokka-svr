@@ -146,3 +146,25 @@ func (c *TokenController) HandleGetTokenTransactionHistory(w http.ResponseWriter
 	ctx := r.Context()
 	response.WriteJson(w, ctx, nil, fmt.Errorf("not implemented"), status.FAIL)
 }
+
+// HandleGetAddressInfo handles POST /token/address-info
+func (c *TokenController) HandleGetAddressInfo(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	if c.tokenService == nil {
+		response.WriteJson(w, ctx, nil, fmt.Errorf("token service is not configured"), status.INTERNAL)
+		return
+	}
+	var req dtos.GetAddressInfoRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, ctx, nil, fmt.Errorf("invalid parameters"), status.FAIL)
+		return
+	}
+
+	result, err := c.tokenService.GetAddressInfo(ctx, &req)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.OK)
+}
