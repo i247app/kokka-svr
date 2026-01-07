@@ -8,23 +8,31 @@ import (
 	"kokka.com/kokka/internal/applications/dtos"
 )
 
-type IVNDXValidator interface {
-	ValidateMintVNDXRequest(req *dtos.MintVNDXRequest) error
-	ValidateBurnVNDXRequest(req *dtos.BurnVNDXRequest) error
-	ValidateTransferVNDXRequest(req *dtos.TransferVNDXRequest) error
-	ValidateGetVNDXBalanceRequest(req *dtos.GetVNDXBalanceRequest) error
+type ITokenValidator interface {
+	ValidateMintTokenRequest(req *dtos.MintTokenRequest) error
+	ValidateBurnTokenRequest(req *dtos.BurnTokenRequest) error
+	ValidateTransferTokenRequest(req *dtos.TransferTokenRequest) error
+	ValidateGetTokenBalanceRequest(req *dtos.GetTokenBalanceRequest) error
 }
 
-type vndxValidator struct{}
+type tokenValidator struct{}
 
-func NewVNDXValidator() *vndxValidator {
-	return &vndxValidator{}
+func NewTokenValidator() *tokenValidator {
+	return &tokenValidator{}
 }
 
-// ValidateMintVNDXRequest validates a mint VNDX request
-func (v *vndxValidator) ValidateMintVNDXRequest(req *dtos.MintVNDXRequest) error {
+// ValidateMintTokenRequest validates a mint token request
+func (v *tokenValidator) ValidateMintTokenRequest(req *dtos.MintTokenRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
+	}
+
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
+
+	if !isValidEthereumAddress(req.ContractAddress) {
+		return errors.New("invalid contract_address format")
 	}
 
 	if req.To == "" {
@@ -46,10 +54,18 @@ func (v *vndxValidator) ValidateMintVNDXRequest(req *dtos.MintVNDXRequest) error
 	return nil
 }
 
-// ValidateBurnVNDXRequest validates a burn VNDX request
-func (v *vndxValidator) ValidateBurnVNDXRequest(req *dtos.BurnVNDXRequest) error {
+// ValidateBurnTokenRequest validates a burn token request
+func (v *tokenValidator) ValidateBurnTokenRequest(req *dtos.BurnTokenRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
+	}
+
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
+
+	if !isValidEthereumAddress(req.ContractAddress) {
+		return errors.New("invalid contract_address format")
 	}
 
 	if req.Amount == "" {
@@ -63,10 +79,18 @@ func (v *vndxValidator) ValidateBurnVNDXRequest(req *dtos.BurnVNDXRequest) error
 	return nil
 }
 
-// ValidateTransferVNDXRequest validates a transfer VNDX request
-func (v *vndxValidator) ValidateTransferVNDXRequest(req *dtos.TransferVNDXRequest) error {
+// ValidateTransferTokenRequest validates a transfer token request
+func (v *tokenValidator) ValidateTransferTokenRequest(req *dtos.TransferTokenRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
+	}
+
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
+
+	if !isValidEthereumAddress(req.ContractAddress) {
+		return errors.New("invalid contract_address format")
 	}
 
 	if req.To == "" {
@@ -88,10 +112,18 @@ func (v *vndxValidator) ValidateTransferVNDXRequest(req *dtos.TransferVNDXReques
 	return nil
 }
 
-// ValidateGetVNDXBalanceRequest validates a get VNDX balance request
-func (v *vndxValidator) ValidateGetVNDXBalanceRequest(req *dtos.GetVNDXBalanceRequest) error {
+// ValidateGetTokenBalanceRequest validates a get token balance request
+func (v *tokenValidator) ValidateGetTokenBalanceRequest(req *dtos.GetTokenBalanceRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
+	}
+
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
+
+	if !isValidEthereumAddress(req.ContractAddress) {
+		return errors.New("invalid contract_address format")
 	}
 
 	if req.Address == "" {

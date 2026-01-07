@@ -12,20 +12,15 @@ import (
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain/vndx"
 )
 
-// VNDXClient handles interactions with the VNDX token contract
-type VNDXClient struct {
-	contractAddress common.Address
-	client          *Client
-	signer          *TransactionSigner
-	abi             abi.ABI
+// TokenClient handles interactions with ERC20 token contracts
+type TokenClient struct {
+	client *Client
+	signer *TransactionSigner
+	abi    abi.ABI
 }
 
-// NewVNDXClient creates a new VNDX client
-func NewVNDXClient(contractAddress string, client *Client, signer *TransactionSigner) (*VNDXClient, error) {
-	if contractAddress == "" {
-		return nil, fmt.Errorf("contract address is required")
-	}
-
+// NewTokenClient creates a new token client
+func NewTokenClient(client *Client, signer *TransactionSigner) (*TokenClient, error) {
 	if client == nil {
 		return nil, fmt.Errorf("blockchain client is required")
 	}
@@ -34,25 +29,21 @@ func NewVNDXClient(contractAddress string, client *Client, signer *TransactionSi
 		return nil, fmt.Errorf("transaction signer is required")
 	}
 
-	// Parse contract address
-	addr := common.HexToAddress(contractAddress)
-
 	// Parse ABI
 	parsedABI, err := abi.JSON(strings.NewReader(vndx.VNDXMetaData.ABI))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse contract ABI: %w", err)
 	}
 
-	return &VNDXClient{
-		contractAddress: addr,
-		client:          client,
-		signer:          signer,
-		abi:             parsedABI,
+	return &TokenClient{
+		client: client,
+		signer: signer,
+		abi:    parsedABI,
 	}, nil
 }
 
-// Mint mints new VNDX tokens to a specified address
-func (v *VNDXClient) Mint(ctx context.Context, to string, amount *big.Int) (string, error) {
+// Mint mints new tokens to a specified address
+func (v *TokenClient) Mint(ctx context.Context, contractAddress string, to string, amount *big.Int) (string, error) {
 	// Encode the mint function call
 	data, err := v.abi.Pack("mint", common.HexToAddress(to), amount)
 	if err != nil {
@@ -61,7 +52,7 @@ func (v *VNDXClient) Mint(ctx context.Context, to string, amount *big.Int) (stri
 
 	// Prepare transaction request
 	txReq := &SignTransactionRequest{
-		To:   v.contractAddress.Hex(),
+		To:   contractAddress,
 		Data: hexutil.Encode(data),
 	}
 
@@ -74,8 +65,8 @@ func (v *VNDXClient) Mint(ctx context.Context, to string, amount *big.Int) (stri
 	return txHash, nil
 }
 
-// Burn burns VNDX tokens from the caller's account
-func (v *VNDXClient) Burn(ctx context.Context, amount *big.Int) (string, error) {
+// Burn burns tokens from the caller's account
+func (v *TokenClient) Burn(ctx context.Context, contractAddress string, amount *big.Int) (string, error) {
 	// Encode the burn function call
 	data, err := v.abi.Pack("burn", amount)
 	if err != nil {
@@ -84,7 +75,7 @@ func (v *VNDXClient) Burn(ctx context.Context, amount *big.Int) (string, error) 
 
 	// Prepare transaction request
 	txReq := &SignTransactionRequest{
-		To:   v.contractAddress.Hex(),
+		To:   contractAddress,
 		Data: hexutil.Encode(data),
 	}
 
@@ -97,8 +88,8 @@ func (v *VNDXClient) Burn(ctx context.Context, amount *big.Int) (string, error) 
 	return txHash, nil
 }
 
-// Transfer transfers VNDX tokens to a specified address
-func (v *VNDXClient) Transfer(ctx context.Context, to string, amount *big.Int) (string, error) {
+// Transfer transfers tokens to a specified address
+func (v *TokenClient) Transfer(ctx context.Context, contractAddress string, to string, amount *big.Int) (string, error) {
 	// Encode the transfer function call
 	data, err := v.abi.Pack("transfer", common.HexToAddress(to), amount)
 	if err != nil {
@@ -107,7 +98,7 @@ func (v *VNDXClient) Transfer(ctx context.Context, to string, amount *big.Int) (
 
 	// Prepare transaction request
 	txReq := &SignTransactionRequest{
-		To:   v.contractAddress.Hex(),
+		To:   contractAddress,
 		Data: hexutil.Encode(data),
 	}
 
@@ -120,8 +111,8 @@ func (v *VNDXClient) Transfer(ctx context.Context, to string, amount *big.Int) (
 	return txHash, nil
 }
 
-// BalanceOf returns the VNDX token balance of an address
-func (v *VNDXClient) BalanceOf(ctx context.Context, address string) (*big.Int, error) {
+// BalanceOf returns the token balance of an address
+func (v *TokenClient) BalanceOf(ctx context.Context, contractAddress string, address string) (*big.Int, error) {
 	// Encode the balanceOf function call
 	data, err := v.abi.Pack("balanceOf", common.HexToAddress(address))
 	if err != nil {
@@ -129,7 +120,7 @@ func (v *VNDXClient) BalanceOf(ctx context.Context, address string) (*big.Int, e
 	}
 
 	// Call the contract (read-only)
-	result, err := v.client.CallContract(ctx, v.contractAddress.Hex(), hexutil.Encode(data), "latest")
+	result, err := v.client.CallContract(ctx, contractAddress, hexutil.Encode(data), "latest")
 	if err != nil {
 		return nil, fmt.Errorf("failed to call balanceOf: %w", err)
 	}
@@ -142,9 +133,4 @@ func (v *VNDXClient) BalanceOf(ctx context.Context, address string) (*big.Int, e
 	}
 
 	return balance, nil
-}
-
-// GetContractAddress returns the VNDX contract address
-func (v *VNDXClient) GetContractAddress() string {
-	return v.contractAddress.Hex()
 }

@@ -26,16 +26,16 @@ func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *s
 	server.AddRoute("POST /blockchain/sign-and-send", bc.SignAndSendTransaction)
 	server.AddRoute("POST /blockchain/rpc", bc.GenericRPCCall)
 
-	// vndx token routes
-	vndx := controller.NewVndxController(services.VNDXService)
+	// token routes (supports VNDX, SGDX, YEXN, etc.)
+	token := controller.NewTokenController(services.TokenService)
 	// POST endpoints
-	server.AddRoute("POST /vndx/mint", vndx.HandleMintVNDX)
-	server.AddRoute("POST /vndx/burn", vndx.HandleBurnVNDX)
-	server.AddRoute("POST /vndx/transfer", vndx.HandleTransferVNDX)
+	server.AddRoute("POST /token/mint", token.HandleMintToken)
+	server.AddRoute("POST /token/burn", token.HandleBurnToken)
+	server.AddRoute("POST /token/transfer", token.HandleTransferToken)
 
 	// GET endpoints
-	server.AddRoute("GET /vndx/balance", vndx.HandleGetVNDXBalance)
-	server.AddRoute("GET /vndx/mint-request", vndx.HandleGetMintRequest)
-	server.AddRoute("GET /vndx/burn-request", vndx.HandleGetBurnRequest)
-	server.AddRoute("GET /vndx/transaction-history", vndx.HandleGetVNDXTransactionHistory)
+	server.AddRoute("GET /token/balance", token.HandleGetTokenBalance)
+	server.AddRoute("GET /token/mint-request", token.HandleGetMintRequest)
+	server.AddRoute("GET /token/burn-request", token.HandleGetBurnRequest)
+	server.AddRoute("GET /token/transaction-history", token.HandleGetTokenTransactionHistory)
 }

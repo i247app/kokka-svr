@@ -10,7 +10,7 @@ import (
 
 type ServiceContainer struct {
 	BlockchainService diSvc.IBlockChainService
-	VNDXService       diSvc.IVNDXService
+	TokenService      diSvc.ITokenService
 }
 
 func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error) {
@@ -39,24 +39,23 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 	blockChainValidator := validators.NewBlockChainValidator()
 	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, txSigner)
 
-	// Initialize VNDX service
-	var vndxService diSvc.IVNDXService
-	if res.Env.BlockchainConfig.VNDXIssuerAddress != "" && txSigner != nil {
-		vndxClient, err := blockchain.NewVNDXClient(
-			res.Env.BlockchainConfig.VNDXIssuerAddress,
+	// Initialize Token service
+	var tokenService diSvc.ITokenService
+	if txSigner != nil {
+		tokenClient, err := blockchain.NewTokenClient(
 			blockchainClient,
 			txSigner,
 		)
 		if err != nil {
-			println("Warning: Failed to initialize VNDX client:", err.Error())
+			println("Warning: Failed to initialize token client:", err.Error())
 		} else {
-			vndxValidator := validators.NewVNDXValidator()
-			vndxService = services.NewVNDXService(vndxValidator, vndxClient)
+			tokenValidator := validators.NewTokenValidator()
+			tokenService = services.NewTokenService(tokenValidator, tokenClient)
 		}
 	}
 
 	return &ServiceContainer{
 		BlockchainService: blockchainService,
-		VNDXService:       vndxService,
+		TokenService:      tokenService,
 	}, nil
 }

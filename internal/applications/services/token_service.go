@@ -11,27 +11,27 @@ import (
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
 )
 
-// VNDXService handles VNDX token business logic
-type VNDXService struct {
-	validator validators.IVNDXValidator
-	client    *blockchain.VNDXClient
+// TokenService handles token business logic
+type TokenService struct {
+	validator validators.ITokenValidator
+	client    *blockchain.TokenClient
 }
 
-// NewVNDXService creates a new VNDX service
-func NewVNDXService(
-	validator validators.IVNDXValidator,
-	client *blockchain.VNDXClient,
-) *VNDXService {
-	return &VNDXService{
+// NewTokenService creates a new token service
+func NewTokenService(
+	validator validators.ITokenValidator,
+	client *blockchain.TokenClient,
+) *TokenService {
+	return &TokenService{
 		validator: validator,
 		client:    client,
 	}
 }
 
-// Mint mints new VNDX tokens to a specified address
-func (s *VNDXService) Mint(ctx context.Context, req *dtos.MintVNDXRequest) (*dtos.MintVNDXResponse, error) {
+// Mint mints new tokens to a specified address
+func (s *TokenService) Mint(ctx context.Context, req *dtos.MintTokenRequest) (*dtos.MintTokenResponse, error) {
 	// Validate request
-	if err := s.validator.ValidateMintVNDXRequest(req); err != nil {
+	if err := s.validator.ValidateMintTokenRequest(req); err != nil {
 		return nil, err
 	}
 
@@ -42,30 +42,31 @@ func (s *VNDXService) Mint(ctx context.Context, req *dtos.MintVNDXRequest) (*dto
 	}
 
 	// Execute mint transaction
-	txHash, err := s.client.Mint(ctx, req.To, amount)
+	txHash, err := s.client.Mint(ctx, req.ContractAddress, req.To, amount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to mint tokens: %w", err)
 	}
 
 	// Query new balance (best effort - don't fail if balance query fails)
-	newBalance, err := s.client.BalanceOf(ctx, req.To)
+	newBalance, err := s.client.BalanceOf(ctx, req.ContractAddress, req.To)
 	var newBalanceStr string
 	if err == nil && newBalance != nil {
 		newBalanceStr = newBalance.String()
 	}
 
-	return &dtos.MintVNDXResponse{
-		TxHash:     txHash,
-		To:         req.To,
-		Amount:     amount.String(),
-		NewBalance: newBalanceStr,
+	return &dtos.MintTokenResponse{
+		TxHash:          txHash,
+		ContractAddress: req.ContractAddress,
+		To:              req.To,
+		Amount:          amount.String(),
+		NewBalance:      newBalanceStr,
 	}, nil
 }
 
-// Burn burns VNDX tokens from the server's account
-func (s *VNDXService) Burn(ctx context.Context, req *dtos.BurnVNDXRequest) (*dtos.BurnVNDXResponse, error) {
+// Burn burns tokens from the server's account
+func (s *TokenService) Burn(ctx context.Context, req *dtos.BurnTokenRequest) (*dtos.BurnTokenResponse, error) {
 	// Validate request
-	if err := s.validator.ValidateBurnVNDXRequest(req); err != nil {
+	if err := s.validator.ValidateBurnTokenRequest(req); err != nil {
 		return nil, err
 	}
 
@@ -76,7 +77,7 @@ func (s *VNDXService) Burn(ctx context.Context, req *dtos.BurnVNDXRequest) (*dto
 	}
 
 	// Execute burn transaction
-	txHash, err := s.client.Burn(ctx, amount)
+	txHash, err := s.client.Burn(ctx, req.ContractAddress, amount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to burn tokens: %w", err)
 	}
@@ -86,17 +87,18 @@ func (s *VNDXService) Burn(ctx context.Context, req *dtos.BurnVNDXRequest) (*dto
 	// For now, we'll leave it empty
 	var newBalanceStr string
 
-	return &dtos.BurnVNDXResponse{
-		TxHash:     txHash,
-		Amount:     amount.String(),
-		NewBalance: newBalanceStr,
+	return &dtos.BurnTokenResponse{
+		TxHash:          txHash,
+		ContractAddress: req.ContractAddress,
+		Amount:          amount.String(),
+		NewBalance:      newBalanceStr,
 	}, nil
 }
 
-// Transfer transfers VNDX tokens to a specified address
-func (s *VNDXService) Transfer(ctx context.Context, req *dtos.TransferVNDXRequest) (*dtos.TransferVNDXResponse, error) {
+// Transfer transfers tokens to a specified address
+func (s *TokenService) Transfer(ctx context.Context, req *dtos.TransferTokenRequest) (*dtos.TransferTokenResponse, error) {
 	// Validate request
-	if err := s.validator.ValidateTransferVNDXRequest(req); err != nil {
+	if err := s.validator.ValidateTransferTokenRequest(req); err != nil {
 		return nil, err
 	}
 
@@ -107,34 +109,36 @@ func (s *VNDXService) Transfer(ctx context.Context, req *dtos.TransferVNDXReques
 	}
 
 	// Execute transfer transaction
-	txHash, err := s.client.Transfer(ctx, req.To, amount)
+	txHash, err := s.client.Transfer(ctx, req.ContractAddress, req.To, amount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to transfer tokens: %w", err)
 	}
 
-	return &dtos.TransferVNDXResponse{
-		TxHash: txHash,
-		To:     req.To,
-		Amount: amount.String(),
+	return &dtos.TransferTokenResponse{
+		TxHash:          txHash,
+		ContractAddress: req.ContractAddress,
+		To:              req.To,
+		Amount:          amount.String(),
 	}, nil
 }
 
-// GetBalance returns the VNDX token balance of an address
-func (s *VNDXService) GetBalance(ctx context.Context, req *dtos.GetVNDXBalanceRequest) (*dtos.GetVNDXBalanceResponse, error) {
+// GetBalance returns the token balance of an address
+func (s *TokenService) GetBalance(ctx context.Context, req *dtos.GetTokenBalanceRequest) (*dtos.GetTokenBalanceResponse, error) {
 	// Validate request
-	if err := s.validator.ValidateGetVNDXBalanceRequest(req); err != nil {
+	if err := s.validator.ValidateGetTokenBalanceRequest(req); err != nil {
 		return nil, err
 	}
 
 	// Query balance
-	balance, err := s.client.BalanceOf(ctx, req.Address)
+	balance, err := s.client.BalanceOf(ctx, req.ContractAddress, req.Address)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get balance: %w", err)
 	}
 
-	return &dtos.GetVNDXBalanceResponse{
-		Address: req.Address,
-		Balance: balance.String(),
+	return &dtos.GetTokenBalanceResponse{
+		ContractAddress: req.ContractAddress,
+		Address:         req.Address,
+		Balance:         balance.String(),
 	}, nil
 }
 

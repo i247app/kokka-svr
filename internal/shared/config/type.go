@@ -45,7 +45,6 @@ type S3Config struct {
 }
 
 type BlockchainConfig struct {
-	RPCURL            string
-	PrivateKey        string // Private key for signing transactions (hex string without 0x prefix)
-	VNDXIssuerAddress string
+	RPCURL     string
+	PrivateKey string // Private key for signing transactions (hex string without 0x prefix)
 }
