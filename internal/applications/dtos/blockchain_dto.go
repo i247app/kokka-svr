@@ -107,14 +107,14 @@ type GenericRPCResponse struct {
 type SignAndMintRequest struct {
 	PrivateKey      string `json:"private_key"`
 	ContractAddress string `json:"contract_address"`
-	Data            []byte `json:"data,omitempty"`
+	Data            string `json:"data,omitempty"`
 }
 
 // BurnTokenRequest represents the request for burning tokens
 type SignAndBurnRequest struct {
 	PrivateKey      string `json:"private_key"`
 	ContractAddress string `json:"contract_address"`
-	Data            []byte `json:"data,omitempty"`
+	Data            string `json:"data,omitempty"`
 }
 
 // SignAndMintResponse represents the response for minting tokens

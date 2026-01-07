@@ -234,7 +234,7 @@ func (c *Client) GetLatestNonce(
 
 	privateKey, err := crypto.HexToECDSA(pkHex)
 	if err != nil {
-		log.Fatal(err)
+		return 0, fmt.Errorf("invalid private key: %w", err)
 	}
 
 	publicKey := privateKey.Public()
@@ -251,7 +251,7 @@ func (c *Client) GetLatestNonce(
 		[]interface{}{fromAddress, "latest"},
 	)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to get transaction count: %w", err)
 	}
 
 	var hexNonce string
@@ -265,14 +265,14 @@ func (c *Client) GetLatestNonce(
 		64,
 	)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to parse nonce: %w", err)
 	}
 
 	return nonce, nil
 }
 
 // GetEstimatedGasPrice estimates gas for a transaction
-func (c *Client) GetEstimatedGasPrice(ctx context.Context, from string, to string, nonce uint64, value *big.Int, data []byte) (*big.Int, error) {
+func (c *Client) GetEstimatedGasPrice(ctx context.Context, from string, to string, nonce uint64, value *big.Int, data string) (*big.Int, error) {
 
 	pkHex := strings.TrimPrefix(from, "0x")
 	privKey, err := crypto.HexToECDSA(pkHex)
@@ -317,12 +317,12 @@ func (c *Client) GetEstimatedGasPrice(ctx context.Context, from string, to strin
 }
 
 // SignAndSendTransaction signs and sends a transaction
-func (c *Client) SignAndSendTransaction(ctx context.Context, privateKey string, contractAddress string, data []byte) (string, error) {
+func (c *Client) SignAndSendTransaction(ctx context.Context, privateKey string, contractAddress string, data string) (string, error) {
 
 	// Get chain ID
 	chain_id, err := c.GetChainID(ctx)
 	if err != nil {
-		log.Fatal("fail to get chain id")
+		return "", fmt.Errorf("fail to get chain id: %w", err)
 	}
 
 	// Get latest nonce
@@ -331,14 +331,17 @@ func (c *Client) SignAndSendTransaction(ctx context.Context, privateKey string, 
 		privateKey,
 	)
 	if err != nil {
-		log.Fatal("fail to get latest nonce")
+		return "", fmt.Errorf("fail to get latest nonce: %w", err)
 	}
 
 	// Calculate gas price
 	gasPriceEstimated, err := c.GetEstimatedGasPrice(ctx, privateKey, contractAddress, nonce, big.NewInt(0), data)
 	if err != nil {
-		log.Fatal("fail to estimate gas")
+		return "", fmt.Errorf("fail to estimate gas: %w", err)
 	}
+
+	gasLimitMul := new(big.Int).Mul(gasPriceEstimated, big.NewInt(15))
+	gasLimit := new(big.Int).Div(gasLimitMul, big.NewInt(10))
 
 	// Sign transaction
 	sign_params := sign.SignTxParams{
@@ -348,19 +351,19 @@ func (c *Client) SignAndSendTransaction(ctx context.Context, privateKey string, 
 		To:         contractAddress,
 		Value:      big.NewInt(0),
 		Data:       data,
-		GasLimit:   21000,
+		GasLimit:   gasLimit.Uint64(),
 		GasPrice:   gasPriceEstimated,
 	}
 
 	signedTx, err := sign.SignTx(sign_params)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to sign transaction: %w", err)
 	}
 
 	var buff bytes.Buffer
 
 	if err := signedTx.EncodeRLP(&buff); err != nil {
-		log.Fatal(err)
+		log.Fatal("failed to encode signed transaction: ", err)
 	}
 
 	rawBytes := buff.Bytes()
@@ -382,12 +385,12 @@ func (c *Client) SignAndSendTransaction(ctx context.Context, privateKey string, 
 }
 
 // SignAndMint signs and sends a minting transaction
-func (c *Client) SignAndMint(ctx context.Context, privateKey string, contractAddress string, data []byte) (string, error) {
+func (c *Client) SignAndMint(ctx context.Context, privateKey string, contractAddress string, data string) (string, error) {
 
 	// Get chain ID
 	chain_id, err := c.GetChainID(ctx)
 	if err != nil {
-		log.Fatal("fail to get chain id")
+		return "", fmt.Errorf("fail to get chain id: %w", err)
 	}
 
 	// Get latest nonce
@@ -396,27 +399,17 @@ func (c *Client) SignAndMint(ctx context.Context, privateKey string, contractAdd
 		privateKey,
 	)
 	if err != nil {
-		log.Fatal("fail to get latest nonce")
+		return "", fmt.Errorf("fail to get latest nonce: %w", err)
 	}
-
-	// Derive sender address from private key for estimation
-	pkHex := strings.TrimPrefix(privateKey, "0x")
-	privKey, err := crypto.HexToECDSA(pkHex)
-	if err != nil {
-		log.Fatal(err)
-	}
-	pubKey := privKey.Public()
-	pubKeyECDSA, ok := pubKey.(*ecdsa.PublicKey)
-	if !ok {
-		log.Fatal("cannot cast public key to ECDSA")
-	}
-	fromAddr := crypto.PubkeyToAddress(*pubKeyECDSA).Hex()
 
 	// Calculate gas price
-	gasPriceEstimated, err := c.GetEstimatedGasPrice(ctx, fromAddr, contractAddress, nonce, big.NewInt(2e18), data)
+	gasPriceEstimated, err := c.GetEstimatedGasPrice(ctx, privateKey, contractAddress, nonce, big.NewInt(2e18), data)
 	if err != nil {
-		log.Fatal("fail to estimate gas")
+		return "", fmt.Errorf("fail to estimate gas: %w", err)
 	}
+
+	gasLimitMul := new(big.Int).Mul(gasPriceEstimated, big.NewInt(15))
+	gasLimit := new(big.Int).Div(gasLimitMul, big.NewInt(10))
 
 	// Sign transaction
 	sign_params := sign.SignTxParams{
@@ -426,7 +419,7 @@ func (c *Client) SignAndMint(ctx context.Context, privateKey string, contractAdd
 		To:         contractAddress,
 		Value:      big.NewInt(0),
 		Data:       data,
-		GasLimit:   21000,
+		GasLimit:   gasLimit.Uint64(),
 		GasPrice:   gasPriceEstimated,
 	}
 
@@ -460,12 +453,12 @@ func (c *Client) SignAndMint(ctx context.Context, privateKey string, contractAdd
 }
 
 // SignAndBurn signs and sends a burning transaction
-func (c *Client) SignAndBurn(ctx context.Context, privateKey string, contractAddress string, data []byte) (string, error) {
+func (c *Client) SignAndBurn(ctx context.Context, privateKey string, contractAddress string, data string) (string, error) {
 
 	// Get chain ID
 	chain_id, err := c.GetChainID(ctx)
 	if err != nil {
-		log.Fatal("fail to get chain id")
+		return "", fmt.Errorf("fail to get chain id: %w", err)
 	}
 
 	// Get latest nonce
@@ -474,14 +467,17 @@ func (c *Client) SignAndBurn(ctx context.Context, privateKey string, contractAdd
 		privateKey,
 	)
 	if err != nil {
-		log.Fatal("fail to get latest nonce")
+		return "", fmt.Errorf("fail to get latest nonce: %w", err)
 	}
 
 	// Calculate gas price
 	gasPriceEstimated, err := c.GetEstimatedGasPrice(ctx, privateKey, contractAddress, nonce, big.NewInt(2e18), data)
 	if err != nil {
-		log.Fatal("fail to estimate gas")
+		return "", fmt.Errorf("fail to estimate gas: %w", err)
 	}
+
+	gasLimitMul := new(big.Int).Mul(gasPriceEstimated, big.NewInt(15))
+	gasLimit := new(big.Int).Div(gasLimitMul, big.NewInt(10))
 
 	// Sign transaction
 	sign_params := sign.SignTxParams{
@@ -491,7 +487,7 @@ func (c *Client) SignAndBurn(ctx context.Context, privateKey string, contractAdd
 		To:         contractAddress,
 		Value:      big.NewInt(0),
 		Data:       data,
-		GasLimit:   21000,
+		GasLimit:   gasLimit.Uint64(),
 		GasPrice:   gasPriceEstimated,
 	}
 

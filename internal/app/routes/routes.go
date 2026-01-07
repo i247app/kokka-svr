@@ -26,5 +26,5 @@ func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *s
 	server.AddRoute("POST /blockchain/rpc", bc.GenericRPCCall)
 	server.AddRoute("POST /blockchain/token/mint", bc.MintToken)
 	server.AddRoute("POST /blockchain/token/burn", bc.BurnToken)
-	server.AddRoute("POST /blockchain/token/sign-and-send-transaction", bc.SignAndSendTransaction)
+	server.AddRoute("POST /blockchain/token/send", bc.SignAndSendTransaction)
 }

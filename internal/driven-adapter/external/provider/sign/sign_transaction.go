@@ -17,7 +17,7 @@ type SignTxParams struct {
 	Nonce      uint64
 	To         string
 	Value      *big.Int
-	Data       []byte
+	Data       string
 	GasLimit   uint64
 	GasPrice   *big.Int
 }
@@ -26,12 +26,24 @@ type SignTxParams struct {
 func SignTx(params SignTxParams) (*types.Transaction, error) {
 
 	pkHex := strings.TrimPrefix(params.PrivateKey, "0x")
+	if len(pkHex) != 64 {
+		return nil, fmt.Errorf("private key must be 64 hex chars (256 bits)")
+	}
+
 	privateKey, err := crypto.HexToECDSA(pkHex)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid private key: %w", err)
 	}
 
 	toAddress := common.HexToAddress(params.To)
+
+	if params.Data == "" {
+		params.Data = "0x"
+	}
+	dataBytes, err := hexutil.Decode(params.Data)
+	if err != nil {
+		return nil, fmt.Errorf("invalid data hex string: %w", err)
+	}
 
 	txData := &types.LegacyTx{
 		Nonce:    params.Nonce,
@@ -39,7 +51,7 @@ func SignTx(params SignTxParams) (*types.Transaction, error) {
 		GasPrice: params.GasPrice,
 		To:       &toAddress,
 		Value:    params.Value,
-		Data:     params.Data,
+		Data:     dataBytes,
 	}
 
 	tx := types.NewTx(txData)
@@ -53,7 +65,7 @@ func SignTx(params SignTxParams) (*types.Transaction, error) {
 
 	signedTx, err := types.SignTx(tx, signer, privateKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to sign transaction: %w", err)
 	}
 
 	return signedTx, nil

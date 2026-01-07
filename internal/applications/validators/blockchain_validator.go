@@ -219,6 +219,12 @@ func ValidateSignAndMintRequest(req *dtos.SignAndMintRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
+	if req.PrivateKey == "" {
+		return errors.New("private_key is required")
+	}
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
 
 	return nil
 }
@@ -227,6 +233,12 @@ func ValidateSignAndMintRequest(req *dtos.SignAndMintRequest) error {
 func ValidateSignAndBurnRequest(req *dtos.SignAndBurnRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
+	}
+	if req.PrivateKey == "" {
+		return errors.New("private_key is required")
+	}
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
 	}
 
 	return nil

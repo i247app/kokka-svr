@@ -255,7 +255,7 @@ func (c *BlockchainController) GenericRPCCall(w http.ResponseWriter, r *http.Req
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
-// MintToken handles POST /blockchain/mint
+// MintToken handles POST /blockchain/token/mint
 func (c *BlockchainController) MintToken(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
