@@ -23,9 +23,6 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 	}
 	blockchainClient := blockchain.NewClient(blockchainConfig)
 
-	println("RPCURL", res.Env.BlockchainConfig.RPCURL)
-	println("DecryptionKey loaded:", len(res.Env.BlockchainConfig.DecryptionKey), "characters")
-
 	// Initialize blockchain service (no global signer - uses per-request signing)
 	blockChainValidator := validators.NewBlockChainValidator()
 	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, nil)
