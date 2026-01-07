@@ -39,6 +39,7 @@ func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *s
 	server.AddRoute("POST /token/mint", token.HandleMintToken)
 	server.AddRoute("POST /token/burn", token.HandleBurnToken)
 	server.AddRoute("POST /token/transfer", token.HandleTransferToken)
+	server.AddRoute("POST /token/address-info", token.HandleGetAddressInfo)
 
 	// GET endpoints
 	server.AddRoute("GET /token/balance", token.HandleGetTokenBalance)

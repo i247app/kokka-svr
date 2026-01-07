@@ -12,6 +12,7 @@ type ITokenValidator interface {
 	ValidateBurnTokenRequest(req *dtos.BurnTokenRequest) error
 	ValidateTransferTokenRequest(req *dtos.TransferTokenRequest) error
 	ValidateGetTokenBalanceRequest(req *dtos.GetTokenBalanceRequest) error
+	ValidateGetAddressInfoRequest(req *dtos.GetAddressInfoRequest) error
 }
 
 type tokenValidator struct{}
@@ -143,6 +144,18 @@ func (v *tokenValidator) ValidateGetTokenBalanceRequest(req *dtos.GetTokenBalanc
 
 	if !isValidEthereumAddress(req.Address) {
 		return errors.New("invalid address format")
+	}
+
+	return nil
+}
+
+// ValidateGetAddressInfoRequest validates a get address info request
+func (v *tokenValidator) ValidateGetAddressInfoRequest(req *dtos.GetAddressInfoRequest) error {
+	if req == nil {
+		return errors.New("request cannot be nil")
+	}
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
 	}
 
 	return nil

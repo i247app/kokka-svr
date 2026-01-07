@@ -52,3 +52,4 @@ func (r *JSONRPCResponse) GetResultAsInt() (int64, error) {
 func (r *JSONRPCResponse) UnmarshalResult(v interface{}) error {
 	return json.Unmarshal(r.Result, v)
 }
+

@@ -131,3 +131,82 @@ func (v *TokenClient) BalanceOf(ctx context.Context, contractAddress string, add
 
 	return balance, nil
 }
+
+type AddressInfoResponse struct {
+	Name         string `json:"name"`
+	Symbol       string `json:"symbol"`
+	Decimals     uint8  `json:"decimals"`
+	TotalSupply  string `json:"total_supply"`
+	OwnerAddress string `json:"owner_address"`
+	OwnerBalance string `json:"owner_balance"`
+}
+
+// AddressInfo retrieves basic information about the token contract at the given address
+func (v *TokenClient) AddressInfo(ctx context.Context, address string) (*AddressInfoResponse, error) {
+
+	// ERC20 ABI
+	const erc20ABI = `[
+  		{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"type":"function"},
+  		{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"type":"function"},
+  		{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"},
+  		{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+  		{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+  		{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"}
+	]`
+
+	contractAddress := common.HexToAddress(address)
+
+	parsedABI, _ := abi.JSON(strings.NewReader(erc20ABI))
+
+	call := func(method string, args ...interface{}) string {
+		data, _ := parsedABI.Pack(method, args...)
+		res, _ := v.client.CallContract(ctx, contractAddress.Hex(), hexutil.Encode(data), "latest")
+		return res
+	}
+
+	// Decode the results
+	var name string
+	err := parsedABI.UnpackIntoInterface(&name, "name", common.FromHex(call("name")))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode name: %w", err)
+	}
+
+	var symbol string
+	err = parsedABI.UnpackIntoInterface(&symbol, "symbol", common.FromHex(call("symbol")))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode symbol: %w", err)
+	}
+
+	var decimals uint8
+	err = parsedABI.UnpackIntoInterface(&decimals, "decimals", common.FromHex(call("decimals")))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode decimals: %w", err)
+	}
+
+	var totalSupply *big.Int
+	err = parsedABI.UnpackIntoInterface(&totalSupply, "totalSupply", common.FromHex(call("totalSupply")))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode totalSupply: %w", err)
+	}
+
+	var owner common.Address
+	err = parsedABI.UnpackIntoInterface(&owner, "owner", common.FromHex(call("owner")))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode owner: %w", err)
+	}
+
+	var balance *big.Int
+	err = parsedABI.UnpackIntoInterface(&balance, "balanceOf", common.FromHex(call("balanceOf", owner)))
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode balanceOf: %w", err)
+	}
+
+	return &AddressInfoResponse{
+		Name:         name,
+		Symbol:       symbol,
+		Decimals:     decimals,
+		TotalSupply:  totalSupply.String(),
+		OwnerAddress: owner.Hex(),
+		OwnerBalance: balance.String(),
+	}, nil
+}

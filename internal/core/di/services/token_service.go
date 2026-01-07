@@ -11,4 +11,5 @@ type ITokenService interface {
 	Burn(ctx context.Context, req *dtos.BurnTokenRequest) (*dtos.BurnTokenResponse, error)
 	Transfer(ctx context.Context, req *dtos.TransferTokenRequest) (*dtos.TransferTokenResponse, error)
 	GetBalance(ctx context.Context, req *dtos.GetTokenBalanceRequest) (*dtos.GetTokenBalanceResponse, error)
+	GetAddressInfo(ctx context.Context, req *dtos.GetAddressInfoRequest) (*dtos.GetAddressInfoResponse, error)
 }
