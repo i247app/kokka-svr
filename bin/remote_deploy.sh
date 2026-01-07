@@ -61,6 +61,7 @@ rsync -avz -R --progress --no-perms -e "ssh -i $SSH_KEY" \
     hmac.key \
     migrations/ \
     keys/ \
+    html/ \
     pre-deploy/ \
     post-deploy/ \
     dist/server \
