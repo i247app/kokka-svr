@@ -8,6 +8,14 @@ import (
 )
 
 func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *services.ServiceContainer) {
+	// Static file routes for goboard UI
+	staticCtrl := controller.NewStaticController("html/goboard")
+	server.AddRoute("GET /goboard", staticCtrl.ServeFile("index.html"))
+	server.AddRoute("GET /goboard/", staticCtrl.ServeFile("index.html"))
+	server.AddRoute("GET /goboard/index.html", staticCtrl.ServeFile("index.html"))
+	server.AddRoute("GET /goboard/index.css", staticCtrl.ServeFile("index.css"))
+	server.AddRoute("GET /goboard/helper.js", staticCtrl.ServeFile("helper.js"))
+
 	// blockchain routes
 	bc := controller.NewBlockchainController(services.BlockchainService)
 	// GET endpoints
