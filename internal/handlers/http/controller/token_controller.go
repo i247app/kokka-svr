@@ -135,8 +135,8 @@ func (c *TokenController) HandleGetTokenTransactionHistory(w http.ResponseWriter
 	response.WriteJson(w, ctx, nil, fmt.Errorf("not implemented"), status.FAIL)
 }
 
-// HandleGetAddressInfo handles POST /token/address-info
-func (c *TokenController) HandleGetAddressInfo(w http.ResponseWriter, r *http.Request) {
+// HandleGetAddressInfo handles POST /token/contract-address-info
+func (c *TokenController) HandleGetContractAddressInfo(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	if c.tokenService == nil {
 		response.WriteJson(w, ctx, nil, fmt.Errorf("token service is not configured"), status.INTERNAL)
