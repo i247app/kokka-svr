@@ -86,6 +86,36 @@ func (c *Client) GetBlockNumber(ctx context.Context) (string, error) {
 	return result, nil
 }
 
+// GetGasPrice returns the current gas price
+func (c *Client) GetGasPrice(ctx context.Context) (string, error) {
+	resp, err := c.Call(ctx, "eth_gasPrice", []interface{}{})
+	if err != nil {
+		return "", fmt.Errorf("failed to get gas price: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse gas price: %w", err)
+	}
+
+	return result, nil
+}
+
+// GetChainID returns the chain ID
+func (c *Client) GetChainID(ctx context.Context) (string, error) {
+	resp, err := c.Call(ctx, "eth_chainId", []interface{}{})
+	if err != nil {
+		return "", fmt.Errorf("failed to get chain ID: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse chain ID: %w", err)
+	}
+
+	return result, nil
+}
+
 // GetBalance returns the balance of an address at a given block
 func (c *Client) GetBalance(ctx context.Context, address string, block string) (string, error) {
 	params := []interface{}{address, block}
@@ -215,36 +245,6 @@ func (c *Client) SendRawTransaction(ctx context.Context, signedTx string) (strin
 	result, err := resp.GetResultAsString()
 	if err != nil {
 		return "", fmt.Errorf("failed to parse transaction hash: %w", err)
-	}
-
-	return result, nil
-}
-
-// GetGasPrice returns the current gas price
-func (c *Client) GetGasPrice(ctx context.Context) (string, error) {
-	resp, err := c.Call(ctx, "eth_gasPrice", []interface{}{})
-	if err != nil {
-		return "", fmt.Errorf("failed to get gas price: %w", err)
-	}
-
-	result, err := resp.GetResultAsString()
-	if err != nil {
-		return "", fmt.Errorf("failed to parse gas price: %w", err)
-	}
-
-	return result, nil
-}
-
-// GetChainID returns the chain ID
-func (c *Client) GetChainID(ctx context.Context) (string, error) {
-	resp, err := c.Call(ctx, "eth_chainId", []interface{}{})
-	if err != nil {
-		return "", fmt.Errorf("failed to get chain ID: %w", err)
-	}
-
-	result, err := resp.GetResultAsString()
-	if err != nil {
-		return "", fmt.Errorf("failed to parse chain ID: %w", err)
 	}
 
 	return result, nil
