@@ -46,4 +46,11 @@ func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *s
 	server.AddRoute("POST /token/mint-request", token.HandleGetMintRequest)
 	server.AddRoute("POST /token/burn-request", token.HandleGetBurnRequest)
 	server.AddRoute("POST /token/transaction-history", token.HandleGetTokenTransactionHistory)
+
+	// swap routes (supports VNDX <-> SGPX, VNDX <-> YENX, etc.)
+	swap := controller.NewSwapController(services.SwapService)
+	// POST endpoints
+	server.AddRoute("POST /swap", swap.HandleSwap)
+	server.AddRoute("POST /swap/quote", swap.HandleGetSwapQuote)
+	server.AddRoute("POST /swap/info", swap.HandleGetSwapInfo)
 }

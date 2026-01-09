@@ -13,6 +13,7 @@ import (
 type ServiceContainer struct {
 	BlockchainService diSvc.IBlockChainService
 	TokenService      diSvc.ITokenService
+	SwapService       diSvc.ISwapService
 }
 
 func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error) {
@@ -38,8 +39,20 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 		return nil, fmt.Errorf("failed to initialize token service: %w", err)
 	}
 
+	// Initialize Swap service (uses per-request signers, no global signer needed)
+	swapValidator := validators.NewSwapValidator()
+	swapService, err := services.NewSwapService(
+		swapValidator,
+		blockchainClient,
+		res.Env.BlockchainConfig.DecryptionKey,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize swap service: %w", err)
+	}
+
 	return &ServiceContainer{
 		BlockchainService: blockchainService,
 		TokenService:      tokenService,
+		SwapService:       swapService,
 	}, nil
 }

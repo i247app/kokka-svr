@@ -100,10 +100,18 @@ deploy-ec2-remote: build-ec2
 	./bin/remote_deploy.sh
 	@echo "make[$@] done"
 
-# generate Go bindings from VNDX contract ABI
-gen-abi:
-	@echo "Generating Go bindings from VNDX ABI..."
-	@mkdir -p internal/driven-adapter/external/blockchain/vndx
-	@abigen --abi=contracts/vndx/VNDX.abi --pkg=vndx --type=VNDX --out=internal/driven-adapter/external/blockchain/vndx/vndx.go
+# generate Go bindings from ERC20 contract ABI
+gen-erc20-abi:
+	@echo "Generating Go bindings from ERC20 ABI..."
+	@mkdir -p internal/driven-adapter/external/blockchain/gen
+	@abigen --abi=contracts/erc20.abi --pkg=erc20 --type=ERC20 --out=internal/driven-adapter/external/blockchain/gen/erc20/erc20.go
 	@echo "✅ Go bindings generated successfully!"
+
+# generate Go bindings from swap contract ABI
+gen-swap-abi:
+	@echo "Generating Go bindings from Swap ABI..."
+	@mkdir -p internal/driven-adapter/external/blockchain/gen
+	@abigen --abi=contracts/swap.abi --pkg=swap --type=Swap --out=internal/driven-adapter/external/blockchain/gen/swap/swap.go
+	@echo "✅ Go bindings generated successfully!"
+
 

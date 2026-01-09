@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package vndx
+package erc20
 
 import (
 	"errors"
@@ -29,113 +29,113 @@ var (
 	_ = abi.ConvertType
 )
 
-// VNDXMetaData contains all meta data concerning the VNDX contract.
-var VNDXMetaData = &bind.MetaData{
+// ERC20MetaData contains all meta data concerning the ERC20 contract.
+var ERC20MetaData = &bind.MetaData{
 	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"burn\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"burnFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"initialOwner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"ECDSAInvalidSignature\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"length\",\"type\":\"uint256\"}],\"name\":\"ECDSAInvalidSignatureLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"ECDSAInvalidSignatureS\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"allowance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"needed\",\"type\":\"uint256\"}],\"name\":\"ERC20InsufficientAllowance\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"needed\",\"type\":\"uint256\"}],\"name\":\"ERC20InsufficientBalance\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"approver\",\"type\":\"address\"}],\"name\":\"ERC20InvalidApprover\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"}],\"name\":\"ERC20InvalidReceiver\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"ERC20InvalidSender\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"ERC20InvalidSpender\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"}],\"name\":\"ERC2612ExpiredSignature\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"signer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"ERC2612InvalidSigner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"currentNonce\",\"type\":\"uint256\"}],\"name\":\"InvalidAccountNonce\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidShortString\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"str\",\"type\":\"string\"}],\"name\":\"StringTooLong\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"EIP712DomainChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"deadline\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"},{\"internalType\":\"bytes32\",\"name\":\"r\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"permit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DOMAIN_SEPARATOR\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"eip712Domain\",\"outputs\":[{\"internalType\":\"bytes1\",\"name\":\"fields\",\"type\":\"bytes1\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"chainId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"verifyingContract\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"salt\",\"type\":\"bytes32\"},{\"internalType\":\"uint256[]\",\"name\":\"extensions\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"nonces\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
-// VNDXABI is the input ABI used to generate the binding from.
-// Deprecated: Use VNDXMetaData.ABI instead.
-var VNDXABI = VNDXMetaData.ABI
+// ERC20ABI is the input ABI used to generate the binding from.
+// Deprecated: Use ERC20MetaData.ABI instead.
+var ERC20ABI = ERC20MetaData.ABI
 
-// VNDX is an auto generated Go binding around an Ethereum contract.
-type VNDX struct {
-	VNDXCaller     // Read-only binding to the contract
-	VNDXTransactor // Write-only binding to the contract
-	VNDXFilterer   // Log filterer for contract events
+// ERC20 is an auto generated Go binding around an Ethereum contract.
+type ERC20 struct {
+	ERC20Caller     // Read-only binding to the contract
+	ERC20Transactor // Write-only binding to the contract
+	ERC20Filterer   // Log filterer for contract events
 }
 
-// VNDXCaller is an auto generated read-only Go binding around an Ethereum contract.
-type VNDXCaller struct {
+// ERC20Caller is an auto generated read-only Go binding around an Ethereum contract.
+type ERC20Caller struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// VNDXTransactor is an auto generated write-only Go binding around an Ethereum contract.
-type VNDXTransactor struct {
+// ERC20Transactor is an auto generated write-only Go binding around an Ethereum contract.
+type ERC20Transactor struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// VNDXFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
-type VNDXFilterer struct {
+// ERC20Filterer is an auto generated log filtering Go binding around an Ethereum contract events.
+type ERC20Filterer struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// VNDXSession is an auto generated Go binding around an Ethereum contract,
+// ERC20Session is an auto generated Go binding around an Ethereum contract,
 // with pre-set call and transact options.
-type VNDXSession struct {
-	Contract     *VNDX             // Generic contract binding to set the session for
+type ERC20Session struct {
+	Contract     *ERC20            // Generic contract binding to set the session for
 	CallOpts     bind.CallOpts     // Call options to use throughout this session
 	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
 }
 
-// VNDXCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// ERC20CallerSession is an auto generated read-only Go binding around an Ethereum contract,
 // with pre-set call options.
-type VNDXCallerSession struct {
-	Contract *VNDXCaller   // Generic contract caller binding to set the session for
+type ERC20CallerSession struct {
+	Contract *ERC20Caller  // Generic contract caller binding to set the session for
 	CallOpts bind.CallOpts // Call options to use throughout this session
 }
 
-// VNDXTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// ERC20TransactorSession is an auto generated write-only Go binding around an Ethereum contract,
 // with pre-set transact options.
-type VNDXTransactorSession struct {
-	Contract     *VNDXTransactor   // Generic contract transactor binding to set the session for
+type ERC20TransactorSession struct {
+	Contract     *ERC20Transactor  // Generic contract transactor binding to set the session for
 	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
 }
 
-// VNDXRaw is an auto generated low-level Go binding around an Ethereum contract.
-type VNDXRaw struct {
-	Contract *VNDX // Generic contract binding to access the raw methods on
+// ERC20Raw is an auto generated low-level Go binding around an Ethereum contract.
+type ERC20Raw struct {
+	Contract *ERC20 // Generic contract binding to access the raw methods on
 }
 
-// VNDXCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
-type VNDXCallerRaw struct {
-	Contract *VNDXCaller // Generic read-only contract binding to access the raw methods on
+// ERC20CallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type ERC20CallerRaw struct {
+	Contract *ERC20Caller // Generic read-only contract binding to access the raw methods on
 }
 
-// VNDXTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
-type VNDXTransactorRaw struct {
-	Contract *VNDXTransactor // Generic write-only contract binding to access the raw methods on
+// ERC20TransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type ERC20TransactorRaw struct {
+	Contract *ERC20Transactor // Generic write-only contract binding to access the raw methods on
 }
 
-// NewVNDX creates a new instance of VNDX, bound to a specific deployed contract.
-func NewVNDX(address common.Address, backend bind.ContractBackend) (*VNDX, error) {
-	contract, err := bindVNDX(address, backend, backend, backend)
+// NewERC20 creates a new instance of ERC20, bound to a specific deployed contract.
+func NewERC20(address common.Address, backend bind.ContractBackend) (*ERC20, error) {
+	contract, err := bindERC20(address, backend, backend, backend)
 	if err != nil {
 		return nil, err
 	}
-	return &VNDX{VNDXCaller: VNDXCaller{contract: contract}, VNDXTransactor: VNDXTransactor{contract: contract}, VNDXFilterer: VNDXFilterer{contract: contract}}, nil
+	return &ERC20{ERC20Caller: ERC20Caller{contract: contract}, ERC20Transactor: ERC20Transactor{contract: contract}, ERC20Filterer: ERC20Filterer{contract: contract}}, nil
 }
 
-// NewVNDXCaller creates a new read-only instance of VNDX, bound to a specific deployed contract.
-func NewVNDXCaller(address common.Address, caller bind.ContractCaller) (*VNDXCaller, error) {
-	contract, err := bindVNDX(address, caller, nil, nil)
+// NewERC20Caller creates a new read-only instance of ERC20, bound to a specific deployed contract.
+func NewERC20Caller(address common.Address, caller bind.ContractCaller) (*ERC20Caller, error) {
+	contract, err := bindERC20(address, caller, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &VNDXCaller{contract: contract}, nil
+	return &ERC20Caller{contract: contract}, nil
 }
 
-// NewVNDXTransactor creates a new write-only instance of VNDX, bound to a specific deployed contract.
-func NewVNDXTransactor(address common.Address, transactor bind.ContractTransactor) (*VNDXTransactor, error) {
-	contract, err := bindVNDX(address, nil, transactor, nil)
+// NewERC20Transactor creates a new write-only instance of ERC20, bound to a specific deployed contract.
+func NewERC20Transactor(address common.Address, transactor bind.ContractTransactor) (*ERC20Transactor, error) {
+	contract, err := bindERC20(address, nil, transactor, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &VNDXTransactor{contract: contract}, nil
+	return &ERC20Transactor{contract: contract}, nil
 }
 
-// NewVNDXFilterer creates a new log filterer instance of VNDX, bound to a specific deployed contract.
-func NewVNDXFilterer(address common.Address, filterer bind.ContractFilterer) (*VNDXFilterer, error) {
-	contract, err := bindVNDX(address, nil, nil, filterer)
+// NewERC20Filterer creates a new log filterer instance of ERC20, bound to a specific deployed contract.
+func NewERC20Filterer(address common.Address, filterer bind.ContractFilterer) (*ERC20Filterer, error) {
+	contract, err := bindERC20(address, nil, nil, filterer)
 	if err != nil {
 		return nil, err
 	}
-	return &VNDXFilterer{contract: contract}, nil
+	return &ERC20Filterer{contract: contract}, nil
 }
 
-// bindVNDX binds a generic wrapper to an already deployed contract.
-func bindVNDX(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
-	parsed, err := VNDXMetaData.GetAbi()
+// bindERC20 binds a generic wrapper to an already deployed contract.
+func bindERC20(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
+	parsed, err := ERC20MetaData.GetAbi()
 	if err != nil {
 		return nil, err
 	}
@@ -146,46 +146,46 @@ func bindVNDX(address common.Address, caller bind.ContractCaller, transactor bin
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_VNDX *VNDXRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _VNDX.Contract.VNDXCaller.contract.Call(opts, result, method, params...)
+func (_ERC20 *ERC20Raw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _ERC20.Contract.ERC20Caller.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_VNDX *VNDXRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _VNDX.Contract.VNDXTransactor.contract.Transfer(opts)
+func (_ERC20 *ERC20Raw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20.Contract.ERC20Transactor.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_VNDX *VNDXRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _VNDX.Contract.VNDXTransactor.contract.Transact(opts, method, params...)
+func (_ERC20 *ERC20Raw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _ERC20.Contract.ERC20Transactor.contract.Transact(opts, method, params...)
 }
 
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
 // returns, a slice of interfaces for anonymous returns and a struct for named
 // returns.
-func (_VNDX *VNDXCallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
-	return _VNDX.Contract.contract.Call(opts, result, method, params...)
+func (_ERC20 *ERC20CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
+	return _ERC20.Contract.contract.Call(opts, result, method, params...)
 }
 
 // Transfer initiates a plain transaction to move funds to the contract, calling
 // its default method if one is available.
-func (_VNDX *VNDXTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _VNDX.Contract.contract.Transfer(opts)
+func (_ERC20 *ERC20TransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20.Contract.contract.Transfer(opts)
 }
 
 // Transact invokes the (paid) contract method with params as input values.
-func (_VNDX *VNDXTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
-	return _VNDX.Contract.contract.Transact(opts, method, params...)
+func (_ERC20 *ERC20TransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _ERC20.Contract.contract.Transact(opts, method, params...)
 }
 
 // DOMAINSEPARATOR is a free data retrieval call binding the contract method 0x3644e515.
 //
 // Solidity: function DOMAIN_SEPARATOR() view returns(bytes32)
-func (_VNDX *VNDXCaller) DOMAINSEPARATOR(opts *bind.CallOpts) ([32]byte, error) {
+func (_ERC20 *ERC20Caller) DOMAINSEPARATOR(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "DOMAIN_SEPARATOR")
+	err := _ERC20.contract.Call(opts, &out, "DOMAIN_SEPARATOR")
 
 	if err != nil {
 		return *new([32]byte), err
@@ -200,23 +200,23 @@ func (_VNDX *VNDXCaller) DOMAINSEPARATOR(opts *bind.CallOpts) ([32]byte, error) 
 // DOMAINSEPARATOR is a free data retrieval call binding the contract method 0x3644e515.
 //
 // Solidity: function DOMAIN_SEPARATOR() view returns(bytes32)
-func (_VNDX *VNDXSession) DOMAINSEPARATOR() ([32]byte, error) {
-	return _VNDX.Contract.DOMAINSEPARATOR(&_VNDX.CallOpts)
+func (_ERC20 *ERC20Session) DOMAINSEPARATOR() ([32]byte, error) {
+	return _ERC20.Contract.DOMAINSEPARATOR(&_ERC20.CallOpts)
 }
 
 // DOMAINSEPARATOR is a free data retrieval call binding the contract method 0x3644e515.
 //
 // Solidity: function DOMAIN_SEPARATOR() view returns(bytes32)
-func (_VNDX *VNDXCallerSession) DOMAINSEPARATOR() ([32]byte, error) {
-	return _VNDX.Contract.DOMAINSEPARATOR(&_VNDX.CallOpts)
+func (_ERC20 *ERC20CallerSession) DOMAINSEPARATOR() ([32]byte, error) {
+	return _ERC20.Contract.DOMAINSEPARATOR(&_ERC20.CallOpts)
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
 //
 // Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_VNDX *VNDXCaller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
+func (_ERC20 *ERC20Caller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "allowance", owner, spender)
+	err := _ERC20.contract.Call(opts, &out, "allowance", owner, spender)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -231,23 +231,23 @@ func (_VNDX *VNDXCaller) Allowance(opts *bind.CallOpts, owner common.Address, sp
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
 //
 // Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_VNDX *VNDXSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _VNDX.Contract.Allowance(&_VNDX.CallOpts, owner, spender)
+func (_ERC20 *ERC20Session) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
+	return _ERC20.Contract.Allowance(&_ERC20.CallOpts, owner, spender)
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
 //
 // Solidity: function allowance(address owner, address spender) view returns(uint256)
-func (_VNDX *VNDXCallerSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
-	return _VNDX.Contract.Allowance(&_VNDX.CallOpts, owner, spender)
+func (_ERC20 *ERC20CallerSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
+	return _ERC20.Contract.Allowance(&_ERC20.CallOpts, owner, spender)
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
 // Solidity: function balanceOf(address account) view returns(uint256)
-func (_VNDX *VNDXCaller) BalanceOf(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
+func (_ERC20 *ERC20Caller) BalanceOf(opts *bind.CallOpts, account common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "balanceOf", account)
+	err := _ERC20.contract.Call(opts, &out, "balanceOf", account)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -262,23 +262,23 @@ func (_VNDX *VNDXCaller) BalanceOf(opts *bind.CallOpts, account common.Address) 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
 // Solidity: function balanceOf(address account) view returns(uint256)
-func (_VNDX *VNDXSession) BalanceOf(account common.Address) (*big.Int, error) {
-	return _VNDX.Contract.BalanceOf(&_VNDX.CallOpts, account)
+func (_ERC20 *ERC20Session) BalanceOf(account common.Address) (*big.Int, error) {
+	return _ERC20.Contract.BalanceOf(&_ERC20.CallOpts, account)
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
 //
 // Solidity: function balanceOf(address account) view returns(uint256)
-func (_VNDX *VNDXCallerSession) BalanceOf(account common.Address) (*big.Int, error) {
-	return _VNDX.Contract.BalanceOf(&_VNDX.CallOpts, account)
+func (_ERC20 *ERC20CallerSession) BalanceOf(account common.Address) (*big.Int, error) {
+	return _ERC20.Contract.BalanceOf(&_ERC20.CallOpts, account)
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
 //
 // Solidity: function decimals() view returns(uint8)
-func (_VNDX *VNDXCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
+func (_ERC20 *ERC20Caller) Decimals(opts *bind.CallOpts) (uint8, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "decimals")
+	err := _ERC20.contract.Call(opts, &out, "decimals")
 
 	if err != nil {
 		return *new(uint8), err
@@ -293,21 +293,21 @@ func (_VNDX *VNDXCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
 //
 // Solidity: function decimals() view returns(uint8)
-func (_VNDX *VNDXSession) Decimals() (uint8, error) {
-	return _VNDX.Contract.Decimals(&_VNDX.CallOpts)
+func (_ERC20 *ERC20Session) Decimals() (uint8, error) {
+	return _ERC20.Contract.Decimals(&_ERC20.CallOpts)
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
 //
 // Solidity: function decimals() view returns(uint8)
-func (_VNDX *VNDXCallerSession) Decimals() (uint8, error) {
-	return _VNDX.Contract.Decimals(&_VNDX.CallOpts)
+func (_ERC20 *ERC20CallerSession) Decimals() (uint8, error) {
+	return _ERC20.Contract.Decimals(&_ERC20.CallOpts)
 }
 
 // Eip712Domain is a free data retrieval call binding the contract method 0x84b0196e.
 //
 // Solidity: function eip712Domain() view returns(bytes1 fields, string name, string version, uint256 chainId, address verifyingContract, bytes32 salt, uint256[] extensions)
-func (_VNDX *VNDXCaller) Eip712Domain(opts *bind.CallOpts) (struct {
+func (_ERC20 *ERC20Caller) Eip712Domain(opts *bind.CallOpts) (struct {
 	Fields            [1]byte
 	Name              string
 	Version           string
@@ -317,7 +317,7 @@ func (_VNDX *VNDXCaller) Eip712Domain(opts *bind.CallOpts) (struct {
 	Extensions        []*big.Int
 }, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "eip712Domain")
+	err := _ERC20.contract.Call(opts, &out, "eip712Domain")
 
 	outstruct := new(struct {
 		Fields            [1]byte
@@ -347,7 +347,7 @@ func (_VNDX *VNDXCaller) Eip712Domain(opts *bind.CallOpts) (struct {
 // Eip712Domain is a free data retrieval call binding the contract method 0x84b0196e.
 //
 // Solidity: function eip712Domain() view returns(bytes1 fields, string name, string version, uint256 chainId, address verifyingContract, bytes32 salt, uint256[] extensions)
-func (_VNDX *VNDXSession) Eip712Domain() (struct {
+func (_ERC20 *ERC20Session) Eip712Domain() (struct {
 	Fields            [1]byte
 	Name              string
 	Version           string
@@ -356,13 +356,13 @@ func (_VNDX *VNDXSession) Eip712Domain() (struct {
 	Salt              [32]byte
 	Extensions        []*big.Int
 }, error) {
-	return _VNDX.Contract.Eip712Domain(&_VNDX.CallOpts)
+	return _ERC20.Contract.Eip712Domain(&_ERC20.CallOpts)
 }
 
 // Eip712Domain is a free data retrieval call binding the contract method 0x84b0196e.
 //
 // Solidity: function eip712Domain() view returns(bytes1 fields, string name, string version, uint256 chainId, address verifyingContract, bytes32 salt, uint256[] extensions)
-func (_VNDX *VNDXCallerSession) Eip712Domain() (struct {
+func (_ERC20 *ERC20CallerSession) Eip712Domain() (struct {
 	Fields            [1]byte
 	Name              string
 	Version           string
@@ -371,15 +371,15 @@ func (_VNDX *VNDXCallerSession) Eip712Domain() (struct {
 	Salt              [32]byte
 	Extensions        []*big.Int
 }, error) {
-	return _VNDX.Contract.Eip712Domain(&_VNDX.CallOpts)
+	return _ERC20.Contract.Eip712Domain(&_ERC20.CallOpts)
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
 //
 // Solidity: function name() view returns(string)
-func (_VNDX *VNDXCaller) Name(opts *bind.CallOpts) (string, error) {
+func (_ERC20 *ERC20Caller) Name(opts *bind.CallOpts) (string, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "name")
+	err := _ERC20.contract.Call(opts, &out, "name")
 
 	if err != nil {
 		return *new(string), err
@@ -394,23 +394,23 @@ func (_VNDX *VNDXCaller) Name(opts *bind.CallOpts) (string, error) {
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
 //
 // Solidity: function name() view returns(string)
-func (_VNDX *VNDXSession) Name() (string, error) {
-	return _VNDX.Contract.Name(&_VNDX.CallOpts)
+func (_ERC20 *ERC20Session) Name() (string, error) {
+	return _ERC20.Contract.Name(&_ERC20.CallOpts)
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
 //
 // Solidity: function name() view returns(string)
-func (_VNDX *VNDXCallerSession) Name() (string, error) {
-	return _VNDX.Contract.Name(&_VNDX.CallOpts)
+func (_ERC20 *ERC20CallerSession) Name() (string, error) {
+	return _ERC20.Contract.Name(&_ERC20.CallOpts)
 }
 
 // Nonces is a free data retrieval call binding the contract method 0x7ecebe00.
 //
 // Solidity: function nonces(address owner) view returns(uint256)
-func (_VNDX *VNDXCaller) Nonces(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
+func (_ERC20 *ERC20Caller) Nonces(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "nonces", owner)
+	err := _ERC20.contract.Call(opts, &out, "nonces", owner)
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -425,23 +425,23 @@ func (_VNDX *VNDXCaller) Nonces(opts *bind.CallOpts, owner common.Address) (*big
 // Nonces is a free data retrieval call binding the contract method 0x7ecebe00.
 //
 // Solidity: function nonces(address owner) view returns(uint256)
-func (_VNDX *VNDXSession) Nonces(owner common.Address) (*big.Int, error) {
-	return _VNDX.Contract.Nonces(&_VNDX.CallOpts, owner)
+func (_ERC20 *ERC20Session) Nonces(owner common.Address) (*big.Int, error) {
+	return _ERC20.Contract.Nonces(&_ERC20.CallOpts, owner)
 }
 
 // Nonces is a free data retrieval call binding the contract method 0x7ecebe00.
 //
 // Solidity: function nonces(address owner) view returns(uint256)
-func (_VNDX *VNDXCallerSession) Nonces(owner common.Address) (*big.Int, error) {
-	return _VNDX.Contract.Nonces(&_VNDX.CallOpts, owner)
+func (_ERC20 *ERC20CallerSession) Nonces(owner common.Address) (*big.Int, error) {
+	return _ERC20.Contract.Nonces(&_ERC20.CallOpts, owner)
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
 // Solidity: function owner() view returns(address)
-func (_VNDX *VNDXCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
+func (_ERC20 *ERC20Caller) Owner(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "owner")
+	err := _ERC20.contract.Call(opts, &out, "owner")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -456,23 +456,23 @@ func (_VNDX *VNDXCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
 // Solidity: function owner() view returns(address)
-func (_VNDX *VNDXSession) Owner() (common.Address, error) {
-	return _VNDX.Contract.Owner(&_VNDX.CallOpts)
+func (_ERC20 *ERC20Session) Owner() (common.Address, error) {
+	return _ERC20.Contract.Owner(&_ERC20.CallOpts)
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
 // Solidity: function owner() view returns(address)
-func (_VNDX *VNDXCallerSession) Owner() (common.Address, error) {
-	return _VNDX.Contract.Owner(&_VNDX.CallOpts)
+func (_ERC20 *ERC20CallerSession) Owner() (common.Address, error) {
+	return _ERC20.Contract.Owner(&_ERC20.CallOpts)
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
 //
 // Solidity: function symbol() view returns(string)
-func (_VNDX *VNDXCaller) Symbol(opts *bind.CallOpts) (string, error) {
+func (_ERC20 *ERC20Caller) Symbol(opts *bind.CallOpts) (string, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "symbol")
+	err := _ERC20.contract.Call(opts, &out, "symbol")
 
 	if err != nil {
 		return *new(string), err
@@ -487,23 +487,23 @@ func (_VNDX *VNDXCaller) Symbol(opts *bind.CallOpts) (string, error) {
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
 //
 // Solidity: function symbol() view returns(string)
-func (_VNDX *VNDXSession) Symbol() (string, error) {
-	return _VNDX.Contract.Symbol(&_VNDX.CallOpts)
+func (_ERC20 *ERC20Session) Symbol() (string, error) {
+	return _ERC20.Contract.Symbol(&_ERC20.CallOpts)
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
 //
 // Solidity: function symbol() view returns(string)
-func (_VNDX *VNDXCallerSession) Symbol() (string, error) {
-	return _VNDX.Contract.Symbol(&_VNDX.CallOpts)
+func (_ERC20 *ERC20CallerSession) Symbol() (string, error) {
+	return _ERC20.Contract.Symbol(&_ERC20.CallOpts)
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
 //
 // Solidity: function totalSupply() view returns(uint256)
-func (_VNDX *VNDXCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
+func (_ERC20 *ERC20Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
-	err := _VNDX.contract.Call(opts, &out, "totalSupply")
+	err := _ERC20.contract.Call(opts, &out, "totalSupply")
 
 	if err != nil {
 		return *new(*big.Int), err
@@ -518,209 +518,209 @@ func (_VNDX *VNDXCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
 //
 // Solidity: function totalSupply() view returns(uint256)
-func (_VNDX *VNDXSession) TotalSupply() (*big.Int, error) {
-	return _VNDX.Contract.TotalSupply(&_VNDX.CallOpts)
+func (_ERC20 *ERC20Session) TotalSupply() (*big.Int, error) {
+	return _ERC20.Contract.TotalSupply(&_ERC20.CallOpts)
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
 //
 // Solidity: function totalSupply() view returns(uint256)
-func (_VNDX *VNDXCallerSession) TotalSupply() (*big.Int, error) {
-	return _VNDX.Contract.TotalSupply(&_VNDX.CallOpts)
+func (_ERC20 *ERC20CallerSession) TotalSupply() (*big.Int, error) {
+	return _ERC20.Contract.TotalSupply(&_ERC20.CallOpts)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
 //
 // Solidity: function approve(address spender, uint256 value) returns(bool)
-func (_VNDX *VNDXTransactor) Approve(opts *bind.TransactOpts, spender common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "approve", spender, value)
+func (_ERC20 *ERC20Transactor) Approve(opts *bind.TransactOpts, spender common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "approve", spender, value)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
 //
 // Solidity: function approve(address spender, uint256 value) returns(bool)
-func (_VNDX *VNDXSession) Approve(spender common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Approve(&_VNDX.TransactOpts, spender, value)
+func (_ERC20 *ERC20Session) Approve(spender common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Approve(&_ERC20.TransactOpts, spender, value)
 }
 
 // Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
 //
 // Solidity: function approve(address spender, uint256 value) returns(bool)
-func (_VNDX *VNDXTransactorSession) Approve(spender common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Approve(&_VNDX.TransactOpts, spender, value)
+func (_ERC20 *ERC20TransactorSession) Approve(spender common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Approve(&_ERC20.TransactOpts, spender, value)
 }
 
 // Burn is a paid mutator transaction binding the contract method 0x42966c68.
 //
 // Solidity: function burn(uint256 value) returns()
-func (_VNDX *VNDXTransactor) Burn(opts *bind.TransactOpts, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "burn", value)
+func (_ERC20 *ERC20Transactor) Burn(opts *bind.TransactOpts, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "burn", value)
 }
 
 // Burn is a paid mutator transaction binding the contract method 0x42966c68.
 //
 // Solidity: function burn(uint256 value) returns()
-func (_VNDX *VNDXSession) Burn(value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Burn(&_VNDX.TransactOpts, value)
+func (_ERC20 *ERC20Session) Burn(value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Burn(&_ERC20.TransactOpts, value)
 }
 
 // Burn is a paid mutator transaction binding the contract method 0x42966c68.
 //
 // Solidity: function burn(uint256 value) returns()
-func (_VNDX *VNDXTransactorSession) Burn(value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Burn(&_VNDX.TransactOpts, value)
+func (_ERC20 *ERC20TransactorSession) Burn(value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Burn(&_ERC20.TransactOpts, value)
 }
 
 // BurnFrom is a paid mutator transaction binding the contract method 0x79cc6790.
 //
 // Solidity: function burnFrom(address account, uint256 value) returns()
-func (_VNDX *VNDXTransactor) BurnFrom(opts *bind.TransactOpts, account common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "burnFrom", account, value)
+func (_ERC20 *ERC20Transactor) BurnFrom(opts *bind.TransactOpts, account common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "burnFrom", account, value)
 }
 
 // BurnFrom is a paid mutator transaction binding the contract method 0x79cc6790.
 //
 // Solidity: function burnFrom(address account, uint256 value) returns()
-func (_VNDX *VNDXSession) BurnFrom(account common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.BurnFrom(&_VNDX.TransactOpts, account, value)
+func (_ERC20 *ERC20Session) BurnFrom(account common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.BurnFrom(&_ERC20.TransactOpts, account, value)
 }
 
 // BurnFrom is a paid mutator transaction binding the contract method 0x79cc6790.
 //
 // Solidity: function burnFrom(address account, uint256 value) returns()
-func (_VNDX *VNDXTransactorSession) BurnFrom(account common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.BurnFrom(&_VNDX.TransactOpts, account, value)
+func (_ERC20 *ERC20TransactorSession) BurnFrom(account common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.BurnFrom(&_ERC20.TransactOpts, account, value)
 }
 
 // Mint is a paid mutator transaction binding the contract method 0x40c10f19.
 //
 // Solidity: function mint(address to, uint256 amount) returns()
-func (_VNDX *VNDXTransactor) Mint(opts *bind.TransactOpts, to common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "mint", to, amount)
+func (_ERC20 *ERC20Transactor) Mint(opts *bind.TransactOpts, to common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "mint", to, amount)
 }
 
 // Mint is a paid mutator transaction binding the contract method 0x40c10f19.
 //
 // Solidity: function mint(address to, uint256 amount) returns()
-func (_VNDX *VNDXSession) Mint(to common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Mint(&_VNDX.TransactOpts, to, amount)
+func (_ERC20 *ERC20Session) Mint(to common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Mint(&_ERC20.TransactOpts, to, amount)
 }
 
 // Mint is a paid mutator transaction binding the contract method 0x40c10f19.
 //
 // Solidity: function mint(address to, uint256 amount) returns()
-func (_VNDX *VNDXTransactorSession) Mint(to common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Mint(&_VNDX.TransactOpts, to, amount)
+func (_ERC20 *ERC20TransactorSession) Mint(to common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Mint(&_ERC20.TransactOpts, to, amount)
 }
 
 // Permit is a paid mutator transaction binding the contract method 0xd505accf.
 //
 // Solidity: function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) returns()
-func (_VNDX *VNDXTransactor) Permit(opts *bind.TransactOpts, owner common.Address, spender common.Address, value *big.Int, deadline *big.Int, v uint8, r [32]byte, s [32]byte) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "permit", owner, spender, value, deadline, v, r, s)
+func (_ERC20 *ERC20Transactor) Permit(opts *bind.TransactOpts, owner common.Address, spender common.Address, value *big.Int, deadline *big.Int, v uint8, r [32]byte, s [32]byte) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "permit", owner, spender, value, deadline, v, r, s)
 }
 
 // Permit is a paid mutator transaction binding the contract method 0xd505accf.
 //
 // Solidity: function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) returns()
-func (_VNDX *VNDXSession) Permit(owner common.Address, spender common.Address, value *big.Int, deadline *big.Int, v uint8, r [32]byte, s [32]byte) (*types.Transaction, error) {
-	return _VNDX.Contract.Permit(&_VNDX.TransactOpts, owner, spender, value, deadline, v, r, s)
+func (_ERC20 *ERC20Session) Permit(owner common.Address, spender common.Address, value *big.Int, deadline *big.Int, v uint8, r [32]byte, s [32]byte) (*types.Transaction, error) {
+	return _ERC20.Contract.Permit(&_ERC20.TransactOpts, owner, spender, value, deadline, v, r, s)
 }
 
 // Permit is a paid mutator transaction binding the contract method 0xd505accf.
 //
 // Solidity: function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) returns()
-func (_VNDX *VNDXTransactorSession) Permit(owner common.Address, spender common.Address, value *big.Int, deadline *big.Int, v uint8, r [32]byte, s [32]byte) (*types.Transaction, error) {
-	return _VNDX.Contract.Permit(&_VNDX.TransactOpts, owner, spender, value, deadline, v, r, s)
+func (_ERC20 *ERC20TransactorSession) Permit(owner common.Address, spender common.Address, value *big.Int, deadline *big.Int, v uint8, r [32]byte, s [32]byte) (*types.Transaction, error) {
+	return _ERC20.Contract.Permit(&_ERC20.TransactOpts, owner, spender, value, deadline, v, r, s)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
 //
 // Solidity: function renounceOwnership() returns()
-func (_VNDX *VNDXTransactor) RenounceOwnership(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "renounceOwnership")
+func (_ERC20 *ERC20Transactor) RenounceOwnership(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "renounceOwnership")
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
 //
 // Solidity: function renounceOwnership() returns()
-func (_VNDX *VNDXSession) RenounceOwnership() (*types.Transaction, error) {
-	return _VNDX.Contract.RenounceOwnership(&_VNDX.TransactOpts)
+func (_ERC20 *ERC20Session) RenounceOwnership() (*types.Transaction, error) {
+	return _ERC20.Contract.RenounceOwnership(&_ERC20.TransactOpts)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
 //
 // Solidity: function renounceOwnership() returns()
-func (_VNDX *VNDXTransactorSession) RenounceOwnership() (*types.Transaction, error) {
-	return _VNDX.Contract.RenounceOwnership(&_VNDX.TransactOpts)
+func (_ERC20 *ERC20TransactorSession) RenounceOwnership() (*types.Transaction, error) {
+	return _ERC20.Contract.RenounceOwnership(&_ERC20.TransactOpts)
 }
 
 // Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
 //
 // Solidity: function transfer(address to, uint256 value) returns(bool)
-func (_VNDX *VNDXTransactor) Transfer(opts *bind.TransactOpts, to common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "transfer", to, value)
+func (_ERC20 *ERC20Transactor) Transfer(opts *bind.TransactOpts, to common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "transfer", to, value)
 }
 
 // Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
 //
 // Solidity: function transfer(address to, uint256 value) returns(bool)
-func (_VNDX *VNDXSession) Transfer(to common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Transfer(&_VNDX.TransactOpts, to, value)
+func (_ERC20 *ERC20Session) Transfer(to common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Transfer(&_ERC20.TransactOpts, to, value)
 }
 
 // Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
 //
 // Solidity: function transfer(address to, uint256 value) returns(bool)
-func (_VNDX *VNDXTransactorSession) Transfer(to common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.Transfer(&_VNDX.TransactOpts, to, value)
+func (_ERC20 *ERC20TransactorSession) Transfer(to common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.Transfer(&_ERC20.TransactOpts, to, value)
 }
 
 // TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
 //
 // Solidity: function transferFrom(address from, address to, uint256 value) returns(bool)
-func (_VNDX *VNDXTransactor) TransferFrom(opts *bind.TransactOpts, from common.Address, to common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "transferFrom", from, to, value)
+func (_ERC20 *ERC20Transactor) TransferFrom(opts *bind.TransactOpts, from common.Address, to common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "transferFrom", from, to, value)
 }
 
 // TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
 //
 // Solidity: function transferFrom(address from, address to, uint256 value) returns(bool)
-func (_VNDX *VNDXSession) TransferFrom(from common.Address, to common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.TransferFrom(&_VNDX.TransactOpts, from, to, value)
+func (_ERC20 *ERC20Session) TransferFrom(from common.Address, to common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.TransferFrom(&_ERC20.TransactOpts, from, to, value)
 }
 
 // TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
 //
 // Solidity: function transferFrom(address from, address to, uint256 value) returns(bool)
-func (_VNDX *VNDXTransactorSession) TransferFrom(from common.Address, to common.Address, value *big.Int) (*types.Transaction, error) {
-	return _VNDX.Contract.TransferFrom(&_VNDX.TransactOpts, from, to, value)
+func (_ERC20 *ERC20TransactorSession) TransferFrom(from common.Address, to common.Address, value *big.Int) (*types.Transaction, error) {
+	return _ERC20.Contract.TransferFrom(&_ERC20.TransactOpts, from, to, value)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
 //
 // Solidity: function transferOwnership(address newOwner) returns()
-func (_VNDX *VNDXTransactor) TransferOwnership(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
-	return _VNDX.contract.Transact(opts, "transferOwnership", newOwner)
+func (_ERC20 *ERC20Transactor) TransferOwnership(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
+	return _ERC20.contract.Transact(opts, "transferOwnership", newOwner)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
 //
 // Solidity: function transferOwnership(address newOwner) returns()
-func (_VNDX *VNDXSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
-	return _VNDX.Contract.TransferOwnership(&_VNDX.TransactOpts, newOwner)
+func (_ERC20 *ERC20Session) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _ERC20.Contract.TransferOwnership(&_ERC20.TransactOpts, newOwner)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
 //
 // Solidity: function transferOwnership(address newOwner) returns()
-func (_VNDX *VNDXTransactorSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
-	return _VNDX.Contract.TransferOwnership(&_VNDX.TransactOpts, newOwner)
+func (_ERC20 *ERC20TransactorSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _ERC20.Contract.TransferOwnership(&_ERC20.TransactOpts, newOwner)
 }
 
-// VNDXApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the VNDX contract.
-type VNDXApprovalIterator struct {
-	Event *VNDXApproval // Event containing the contract specifics and raw log
+// ERC20ApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the ERC20 contract.
+type ERC20ApprovalIterator struct {
+	Event *ERC20Approval // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -734,7 +734,7 @@ type VNDXApprovalIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *VNDXApprovalIterator) Next() bool {
+func (it *ERC20ApprovalIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -743,7 +743,7 @@ func (it *VNDXApprovalIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(VNDXApproval)
+			it.Event = new(ERC20Approval)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -758,7 +758,7 @@ func (it *VNDXApprovalIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(VNDXApproval)
+		it.Event = new(ERC20Approval)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -774,19 +774,19 @@ func (it *VNDXApprovalIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *VNDXApprovalIterator) Error() error {
+func (it *ERC20ApprovalIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *VNDXApprovalIterator) Close() error {
+func (it *ERC20ApprovalIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// VNDXApproval represents a Approval event raised by the VNDX contract.
-type VNDXApproval struct {
+// ERC20Approval represents a Approval event raised by the ERC20 contract.
+type ERC20Approval struct {
 	Owner   common.Address
 	Spender common.Address
 	Value   *big.Int
@@ -796,7 +796,7 @@ type VNDXApproval struct {
 // FilterApproval is a free log retrieval operation binding the contract event 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925.
 //
 // Solidity: event Approval(address indexed owner, address indexed spender, uint256 value)
-func (_VNDX *VNDXFilterer) FilterApproval(opts *bind.FilterOpts, owner []common.Address, spender []common.Address) (*VNDXApprovalIterator, error) {
+func (_ERC20 *ERC20Filterer) FilterApproval(opts *bind.FilterOpts, owner []common.Address, spender []common.Address) (*ERC20ApprovalIterator, error) {
 
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
@@ -807,17 +807,17 @@ func (_VNDX *VNDXFilterer) FilterApproval(opts *bind.FilterOpts, owner []common.
 		spenderRule = append(spenderRule, spenderItem)
 	}
 
-	logs, sub, err := _VNDX.contract.FilterLogs(opts, "Approval", ownerRule, spenderRule)
+	logs, sub, err := _ERC20.contract.FilterLogs(opts, "Approval", ownerRule, spenderRule)
 	if err != nil {
 		return nil, err
 	}
-	return &VNDXApprovalIterator{contract: _VNDX.contract, event: "Approval", logs: logs, sub: sub}, nil
+	return &ERC20ApprovalIterator{contract: _ERC20.contract, event: "Approval", logs: logs, sub: sub}, nil
 }
 
 // WatchApproval is a free log subscription operation binding the contract event 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925.
 //
 // Solidity: event Approval(address indexed owner, address indexed spender, uint256 value)
-func (_VNDX *VNDXFilterer) WatchApproval(opts *bind.WatchOpts, sink chan<- *VNDXApproval, owner []common.Address, spender []common.Address) (event.Subscription, error) {
+func (_ERC20 *ERC20Filterer) WatchApproval(opts *bind.WatchOpts, sink chan<- *ERC20Approval, owner []common.Address, spender []common.Address) (event.Subscription, error) {
 
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
@@ -828,7 +828,7 @@ func (_VNDX *VNDXFilterer) WatchApproval(opts *bind.WatchOpts, sink chan<- *VNDX
 		spenderRule = append(spenderRule, spenderItem)
 	}
 
-	logs, sub, err := _VNDX.contract.WatchLogs(opts, "Approval", ownerRule, spenderRule)
+	logs, sub, err := _ERC20.contract.WatchLogs(opts, "Approval", ownerRule, spenderRule)
 	if err != nil {
 		return nil, err
 	}
@@ -838,8 +838,8 @@ func (_VNDX *VNDXFilterer) WatchApproval(opts *bind.WatchOpts, sink chan<- *VNDX
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(VNDXApproval)
-				if err := _VNDX.contract.UnpackLog(event, "Approval", log); err != nil {
+				event := new(ERC20Approval)
+				if err := _ERC20.contract.UnpackLog(event, "Approval", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -863,18 +863,18 @@ func (_VNDX *VNDXFilterer) WatchApproval(opts *bind.WatchOpts, sink chan<- *VNDX
 // ParseApproval is a log parse operation binding the contract event 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925.
 //
 // Solidity: event Approval(address indexed owner, address indexed spender, uint256 value)
-func (_VNDX *VNDXFilterer) ParseApproval(log types.Log) (*VNDXApproval, error) {
-	event := new(VNDXApproval)
-	if err := _VNDX.contract.UnpackLog(event, "Approval", log); err != nil {
+func (_ERC20 *ERC20Filterer) ParseApproval(log types.Log) (*ERC20Approval, error) {
+	event := new(ERC20Approval)
+	if err := _ERC20.contract.UnpackLog(event, "Approval", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// VNDXEIP712DomainChangedIterator is returned from FilterEIP712DomainChanged and is used to iterate over the raw logs and unpacked data for EIP712DomainChanged events raised by the VNDX contract.
-type VNDXEIP712DomainChangedIterator struct {
-	Event *VNDXEIP712DomainChanged // Event containing the contract specifics and raw log
+// ERC20EIP712DomainChangedIterator is returned from FilterEIP712DomainChanged and is used to iterate over the raw logs and unpacked data for EIP712DomainChanged events raised by the ERC20 contract.
+type ERC20EIP712DomainChangedIterator struct {
+	Event *ERC20EIP712DomainChanged // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -888,7 +888,7 @@ type VNDXEIP712DomainChangedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *VNDXEIP712DomainChangedIterator) Next() bool {
+func (it *ERC20EIP712DomainChangedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -897,7 +897,7 @@ func (it *VNDXEIP712DomainChangedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(VNDXEIP712DomainChanged)
+			it.Event = new(ERC20EIP712DomainChanged)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -912,7 +912,7 @@ func (it *VNDXEIP712DomainChangedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(VNDXEIP712DomainChanged)
+		it.Event = new(ERC20EIP712DomainChanged)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -928,40 +928,40 @@ func (it *VNDXEIP712DomainChangedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *VNDXEIP712DomainChangedIterator) Error() error {
+func (it *ERC20EIP712DomainChangedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *VNDXEIP712DomainChangedIterator) Close() error {
+func (it *ERC20EIP712DomainChangedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// VNDXEIP712DomainChanged represents a EIP712DomainChanged event raised by the VNDX contract.
-type VNDXEIP712DomainChanged struct {
+// ERC20EIP712DomainChanged represents a EIP712DomainChanged event raised by the ERC20 contract.
+type ERC20EIP712DomainChanged struct {
 	Raw types.Log // Blockchain specific contextual infos
 }
 
 // FilterEIP712DomainChanged is a free log retrieval operation binding the contract event 0x0a6387c9ea3628b88a633bb4f3b151770f70085117a15f9bf3787cda53f13d31.
 //
 // Solidity: event EIP712DomainChanged()
-func (_VNDX *VNDXFilterer) FilterEIP712DomainChanged(opts *bind.FilterOpts) (*VNDXEIP712DomainChangedIterator, error) {
+func (_ERC20 *ERC20Filterer) FilterEIP712DomainChanged(opts *bind.FilterOpts) (*ERC20EIP712DomainChangedIterator, error) {
 
-	logs, sub, err := _VNDX.contract.FilterLogs(opts, "EIP712DomainChanged")
+	logs, sub, err := _ERC20.contract.FilterLogs(opts, "EIP712DomainChanged")
 	if err != nil {
 		return nil, err
 	}
-	return &VNDXEIP712DomainChangedIterator{contract: _VNDX.contract, event: "EIP712DomainChanged", logs: logs, sub: sub}, nil
+	return &ERC20EIP712DomainChangedIterator{contract: _ERC20.contract, event: "EIP712DomainChanged", logs: logs, sub: sub}, nil
 }
 
 // WatchEIP712DomainChanged is a free log subscription operation binding the contract event 0x0a6387c9ea3628b88a633bb4f3b151770f70085117a15f9bf3787cda53f13d31.
 //
 // Solidity: event EIP712DomainChanged()
-func (_VNDX *VNDXFilterer) WatchEIP712DomainChanged(opts *bind.WatchOpts, sink chan<- *VNDXEIP712DomainChanged) (event.Subscription, error) {
+func (_ERC20 *ERC20Filterer) WatchEIP712DomainChanged(opts *bind.WatchOpts, sink chan<- *ERC20EIP712DomainChanged) (event.Subscription, error) {
 
-	logs, sub, err := _VNDX.contract.WatchLogs(opts, "EIP712DomainChanged")
+	logs, sub, err := _ERC20.contract.WatchLogs(opts, "EIP712DomainChanged")
 	if err != nil {
 		return nil, err
 	}
@@ -971,8 +971,8 @@ func (_VNDX *VNDXFilterer) WatchEIP712DomainChanged(opts *bind.WatchOpts, sink c
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(VNDXEIP712DomainChanged)
-				if err := _VNDX.contract.UnpackLog(event, "EIP712DomainChanged", log); err != nil {
+				event := new(ERC20EIP712DomainChanged)
+				if err := _ERC20.contract.UnpackLog(event, "EIP712DomainChanged", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -996,18 +996,18 @@ func (_VNDX *VNDXFilterer) WatchEIP712DomainChanged(opts *bind.WatchOpts, sink c
 // ParseEIP712DomainChanged is a log parse operation binding the contract event 0x0a6387c9ea3628b88a633bb4f3b151770f70085117a15f9bf3787cda53f13d31.
 //
 // Solidity: event EIP712DomainChanged()
-func (_VNDX *VNDXFilterer) ParseEIP712DomainChanged(log types.Log) (*VNDXEIP712DomainChanged, error) {
-	event := new(VNDXEIP712DomainChanged)
-	if err := _VNDX.contract.UnpackLog(event, "EIP712DomainChanged", log); err != nil {
+func (_ERC20 *ERC20Filterer) ParseEIP712DomainChanged(log types.Log) (*ERC20EIP712DomainChanged, error) {
+	event := new(ERC20EIP712DomainChanged)
+	if err := _ERC20.contract.UnpackLog(event, "EIP712DomainChanged", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// VNDXOwnershipTransferredIterator is returned from FilterOwnershipTransferred and is used to iterate over the raw logs and unpacked data for OwnershipTransferred events raised by the VNDX contract.
-type VNDXOwnershipTransferredIterator struct {
-	Event *VNDXOwnershipTransferred // Event containing the contract specifics and raw log
+// ERC20OwnershipTransferredIterator is returned from FilterOwnershipTransferred and is used to iterate over the raw logs and unpacked data for OwnershipTransferred events raised by the ERC20 contract.
+type ERC20OwnershipTransferredIterator struct {
+	Event *ERC20OwnershipTransferred // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1021,7 +1021,7 @@ type VNDXOwnershipTransferredIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *VNDXOwnershipTransferredIterator) Next() bool {
+func (it *ERC20OwnershipTransferredIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1030,7 +1030,7 @@ func (it *VNDXOwnershipTransferredIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(VNDXOwnershipTransferred)
+			it.Event = new(ERC20OwnershipTransferred)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1045,7 +1045,7 @@ func (it *VNDXOwnershipTransferredIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(VNDXOwnershipTransferred)
+		it.Event = new(ERC20OwnershipTransferred)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1061,19 +1061,19 @@ func (it *VNDXOwnershipTransferredIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *VNDXOwnershipTransferredIterator) Error() error {
+func (it *ERC20OwnershipTransferredIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *VNDXOwnershipTransferredIterator) Close() error {
+func (it *ERC20OwnershipTransferredIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// VNDXOwnershipTransferred represents a OwnershipTransferred event raised by the VNDX contract.
-type VNDXOwnershipTransferred struct {
+// ERC20OwnershipTransferred represents a OwnershipTransferred event raised by the ERC20 contract.
+type ERC20OwnershipTransferred struct {
 	PreviousOwner common.Address
 	NewOwner      common.Address
 	Raw           types.Log // Blockchain specific contextual infos
@@ -1082,7 +1082,7 @@ type VNDXOwnershipTransferred struct {
 // FilterOwnershipTransferred is a free log retrieval operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
-func (_VNDX *VNDXFilterer) FilterOwnershipTransferred(opts *bind.FilterOpts, previousOwner []common.Address, newOwner []common.Address) (*VNDXOwnershipTransferredIterator, error) {
+func (_ERC20 *ERC20Filterer) FilterOwnershipTransferred(opts *bind.FilterOpts, previousOwner []common.Address, newOwner []common.Address) (*ERC20OwnershipTransferredIterator, error) {
 
 	var previousOwnerRule []interface{}
 	for _, previousOwnerItem := range previousOwner {
@@ -1093,17 +1093,17 @@ func (_VNDX *VNDXFilterer) FilterOwnershipTransferred(opts *bind.FilterOpts, pre
 		newOwnerRule = append(newOwnerRule, newOwnerItem)
 	}
 
-	logs, sub, err := _VNDX.contract.FilterLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
+	logs, sub, err := _ERC20.contract.FilterLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
 	if err != nil {
 		return nil, err
 	}
-	return &VNDXOwnershipTransferredIterator{contract: _VNDX.contract, event: "OwnershipTransferred", logs: logs, sub: sub}, nil
+	return &ERC20OwnershipTransferredIterator{contract: _ERC20.contract, event: "OwnershipTransferred", logs: logs, sub: sub}, nil
 }
 
 // WatchOwnershipTransferred is a free log subscription operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
-func (_VNDX *VNDXFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink chan<- *VNDXOwnershipTransferred, previousOwner []common.Address, newOwner []common.Address) (event.Subscription, error) {
+func (_ERC20 *ERC20Filterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink chan<- *ERC20OwnershipTransferred, previousOwner []common.Address, newOwner []common.Address) (event.Subscription, error) {
 
 	var previousOwnerRule []interface{}
 	for _, previousOwnerItem := range previousOwner {
@@ -1114,7 +1114,7 @@ func (_VNDX *VNDXFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink 
 		newOwnerRule = append(newOwnerRule, newOwnerItem)
 	}
 
-	logs, sub, err := _VNDX.contract.WatchLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
+	logs, sub, err := _ERC20.contract.WatchLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
 	if err != nil {
 		return nil, err
 	}
@@ -1124,8 +1124,8 @@ func (_VNDX *VNDXFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink 
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(VNDXOwnershipTransferred)
-				if err := _VNDX.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
+				event := new(ERC20OwnershipTransferred)
+				if err := _ERC20.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1149,18 +1149,18 @@ func (_VNDX *VNDXFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink 
 // ParseOwnershipTransferred is a log parse operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
 //
 // Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
-func (_VNDX *VNDXFilterer) ParseOwnershipTransferred(log types.Log) (*VNDXOwnershipTransferred, error) {
-	event := new(VNDXOwnershipTransferred)
-	if err := _VNDX.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
+func (_ERC20 *ERC20Filterer) ParseOwnershipTransferred(log types.Log) (*ERC20OwnershipTransferred, error) {
+	event := new(ERC20OwnershipTransferred)
+	if err := _ERC20.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// VNDXTransferIterator is returned from FilterTransfer and is used to iterate over the raw logs and unpacked data for Transfer events raised by the VNDX contract.
-type VNDXTransferIterator struct {
-	Event *VNDXTransfer // Event containing the contract specifics and raw log
+// ERC20TransferIterator is returned from FilterTransfer and is used to iterate over the raw logs and unpacked data for Transfer events raised by the ERC20 contract.
+type ERC20TransferIterator struct {
+	Event *ERC20Transfer // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1174,7 +1174,7 @@ type VNDXTransferIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *VNDXTransferIterator) Next() bool {
+func (it *ERC20TransferIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1183,7 +1183,7 @@ func (it *VNDXTransferIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(VNDXTransfer)
+			it.Event = new(ERC20Transfer)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1198,7 +1198,7 @@ func (it *VNDXTransferIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(VNDXTransfer)
+		it.Event = new(ERC20Transfer)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1214,19 +1214,19 @@ func (it *VNDXTransferIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *VNDXTransferIterator) Error() error {
+func (it *ERC20TransferIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *VNDXTransferIterator) Close() error {
+func (it *ERC20TransferIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// VNDXTransfer represents a Transfer event raised by the VNDX contract.
-type VNDXTransfer struct {
+// ERC20Transfer represents a Transfer event raised by the ERC20 contract.
+type ERC20Transfer struct {
 	From  common.Address
 	To    common.Address
 	Value *big.Int
@@ -1236,7 +1236,7 @@ type VNDXTransfer struct {
 // FilterTransfer is a free log retrieval operation binding the contract event 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef.
 //
 // Solidity: event Transfer(address indexed from, address indexed to, uint256 value)
-func (_VNDX *VNDXFilterer) FilterTransfer(opts *bind.FilterOpts, from []common.Address, to []common.Address) (*VNDXTransferIterator, error) {
+func (_ERC20 *ERC20Filterer) FilterTransfer(opts *bind.FilterOpts, from []common.Address, to []common.Address) (*ERC20TransferIterator, error) {
 
 	var fromRule []interface{}
 	for _, fromItem := range from {
@@ -1247,17 +1247,17 @@ func (_VNDX *VNDXFilterer) FilterTransfer(opts *bind.FilterOpts, from []common.A
 		toRule = append(toRule, toItem)
 	}
 
-	logs, sub, err := _VNDX.contract.FilterLogs(opts, "Transfer", fromRule, toRule)
+	logs, sub, err := _ERC20.contract.FilterLogs(opts, "Transfer", fromRule, toRule)
 	if err != nil {
 		return nil, err
 	}
-	return &VNDXTransferIterator{contract: _VNDX.contract, event: "Transfer", logs: logs, sub: sub}, nil
+	return &ERC20TransferIterator{contract: _ERC20.contract, event: "Transfer", logs: logs, sub: sub}, nil
 }
 
 // WatchTransfer is a free log subscription operation binding the contract event 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef.
 //
 // Solidity: event Transfer(address indexed from, address indexed to, uint256 value)
-func (_VNDX *VNDXFilterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *VNDXTransfer, from []common.Address, to []common.Address) (event.Subscription, error) {
+func (_ERC20 *ERC20Filterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *ERC20Transfer, from []common.Address, to []common.Address) (event.Subscription, error) {
 
 	var fromRule []interface{}
 	for _, fromItem := range from {
@@ -1268,7 +1268,7 @@ func (_VNDX *VNDXFilterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *VNDX
 		toRule = append(toRule, toItem)
 	}
 
-	logs, sub, err := _VNDX.contract.WatchLogs(opts, "Transfer", fromRule, toRule)
+	logs, sub, err := _ERC20.contract.WatchLogs(opts, "Transfer", fromRule, toRule)
 	if err != nil {
 		return nil, err
 	}
@@ -1278,8 +1278,8 @@ func (_VNDX *VNDXFilterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *VNDX
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(VNDXTransfer)
-				if err := _VNDX.contract.UnpackLog(event, "Transfer", log); err != nil {
+				event := new(ERC20Transfer)
+				if err := _ERC20.contract.UnpackLog(event, "Transfer", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1303,9 +1303,9 @@ func (_VNDX *VNDXFilterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *VNDX
 // ParseTransfer is a log parse operation binding the contract event 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef.
 //
 // Solidity: event Transfer(address indexed from, address indexed to, uint256 value)
-func (_VNDX *VNDXFilterer) ParseTransfer(log types.Log) (*VNDXTransfer, error) {
-	event := new(VNDXTransfer)
-	if err := _VNDX.contract.UnpackLog(event, "Transfer", log); err != nil {
+func (_ERC20 *ERC20Filterer) ParseTransfer(log types.Log) (*ERC20Transfer, error) {
+	event := new(ERC20Transfer)
+	if err := _ERC20.contract.UnpackLog(event, "Transfer", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

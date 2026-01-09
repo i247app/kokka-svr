@@ -10,6 +10,7 @@ log_file
 CLAUDE.md
 CHAIN.md
 VNDX_IMPLEMENTATION_SUMMARY.md
+SWAP_SERVICE.md
 
 # go workspace files
 go.work

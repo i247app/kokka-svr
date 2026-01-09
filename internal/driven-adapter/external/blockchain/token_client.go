@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"kokka.com/kokka/internal/driven-adapter/external/blockchain/vndx"
+	"kokka.com/kokka/internal/driven-adapter/external/blockchain/gen/erc20"
 )
 
 // TokenClient handles interactions with ERC20 token contracts
@@ -27,7 +27,7 @@ func NewTokenClient(client *Client, signer *TransactionSigner) (*TokenClient, er
 	}
 
 	// Parse ABI
-	parsedABI, err := abi.JSON(strings.NewReader(vndx.VNDXMetaData.ABI))
+	parsedABI, err := abi.JSON(strings.NewReader(erc20.ERC20MetaData.ABI))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse contract ABI: %w", err)
 	}
