@@ -40,10 +40,6 @@ func (i *LoggingInterceptor) Before(ctx context.Context, req *http.Request) erro
 
 	logger.Infof("[HTTP Client] %s %s", req.Method, req.URL.String())
 
-	// if i.LogBody && req.Body != nil {
-	// 	logger.Debugf("[HTTP Client] Request Headers: %v", req.Header)
-	// }
-
 	if req.Header != nil {
 		logger.Info("[HTTP Client] Request Headers")
 		for key, values := range req.Header {

@@ -84,7 +84,7 @@ func (m *requestLoggerMiddleware) Handle(next http.Handler) http.Handler {
 		wrapper := m.newResponseWrapper(w)
 		next.ServeHTTP(wrapper, r)
 
-		log.InfofWithBgColor(logger.BgYellow, "%s", wrapper.body.String())
+		log.InfofWithBgColor(logger.BgYellow, "OUT <%v> %v %v \n%s", reqID, r.Method, r.URL.Path, wrapper.body.String())
 
 		m.flushResponse(w, wrapper)
 	})
