@@ -12,7 +12,7 @@ import (
 	"kokka.com/kokka/internal/handlers/http/middleware"
 	"kokka.com/kokka/internal/shared/config"
 	"kokka.com/kokka/internal/shared/constant/status"
-	"kokka.com/kokka/internal/shared/utils/response"
+	"kokka.com/kokka/internal/shared/response"
 )
 
 func NewFromEnv(envPath string) (*App, error) {

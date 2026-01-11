@@ -14,6 +14,7 @@ type IBlockChainService interface {
 	CallContract(ctx context.Context, req *dtos.CallContractRequest) (*dtos.CallContractResponse, error)
 	EstimateGas(ctx context.Context, req *dtos.EstimateGasRequest) (*dtos.EstimateGasResponse, error)
 	SendRawTransaction(ctx context.Context, req *dtos.SendRawTransactionRequest) (*dtos.SendRawTransactionResponse, error)
+	SignAndSendTransaction(ctx context.Context, req *dtos.SignAndSendTransactionRequest) (*dtos.SignAndSendTransactionResponse, error)
 	GetGasPrice(ctx context.Context) (*dtos.GetGasPriceResponse, error)
 	GetChainID(ctx context.Context) (*dtos.GetChainIDResponse, error)
 	GenericRPCCall(ctx context.Context, req *dtos.GenericRPCRequest) (*dtos.GenericRPCResponse, error)

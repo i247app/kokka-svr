@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Token Management Dashboard</title>
+    <link rel="stylesheet" href="index.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- <header class="header">
+        <h1>🪙 Token Management</h1>
+      </header> -->
+
+      <!-- Contract Information Section -->
+      <div class="contract-info-section">
+        <h2 class="section-title">📊 Contract Information</h2>
+
+        <div class="contract-grid">
+          <!-- VNDX Contract Info -->
+          <div class="contract-box" id="vndx-contract">
+            <div class="contract-box-header">
+              <span class="contract-icon">🇻🇳</span>
+              <span class="contract-name">VNDX</span>
+            </div>
+            <div class="contract-card">
+              <div class="contract-loading">
+                <span class="spinner">⏳</span>
+                <span>Loading...</span>
+              </div>
+              <div class="contract-data"></div>
+              <div class="contract-error"></div>
+            </div>
+          </div>
+
+          <!-- SGPX Contract Info -->
+          <div class="contract-box" id="sgpx-contract">
+            <div class="contract-box-header">
+              <span class="contract-icon">🇸🇬</span>
+              <span class="contract-name">SGPX</span>
+            </div>
+            <div class="contract-card">
+              <div class="contract-loading">
+                <span class="spinner">⏳</span>
+                <span>Loading...</span>
+              </div>
+              <div class="contract-data"></div>
+              <div class="contract-error"></div>
+            </div>
+          </div>
+
+          <!-- YENX Contract Info -->
+          <div class="contract-box" id="yenx-contract">
+            <div class="contract-box-header">
+              <span class="contract-icon">🇯🇵</span>
+              <span class="contract-name">YENX</span>
+            </div>
+            <div class="contract-card">
+              <div class="contract-loading">
+                <span class="spinner">⏳</span>
+                <span>Loading...</span>
+              </div>
+              <div class="contract-data"></div>
+              <div class="contract-error"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Swap Section -->
+      <div class="swap-section">
+        <h2 class="section-title">🔄 Token Swap</h2>
+
+        <div class="swap-tabs">
+          <button class="swap-tab-button active" data-swap-tab="swap-execute">
+            <span class="icon">↔️</span>
+            Execute Swap
+          </button>
+          <button class="swap-tab-button" data-swap-tab="swap-quote">
+            <span class="icon">💱</span>
+            Get Quote
+          </button>
+          <button class="swap-tab-button" data-swap-tab="swap-info">
+            <span class="icon">ℹ️</span>
+            Swap Info
+          </button>
+        </div>
+
+        <!-- Execute Swap Tab -->
+        <div class="swap-tab-content active" id="swap-execute-tab">
+          <div class="card">
+            <h2>Execute Token Swap</h2>
+            <p class="description">
+              Swap tokens between different stablecoins (e.g., VNDX ↔ SGPX)
+            </p>
+
+            <form id="swap-execute-form" class="form">
+              <div class="form-group">
+                <label for="swap-contract">Swap Contract Address *</label>
+                <input
+                  type="text"
+                  id="swap-contract"
+                  placeholder="0x..."
+                  required
+                />
+                <span class="hint"
+                  >The swap contract address for the token pair</span
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="swap-amount">Amount In *</label>
+                <input
+                  type="text"
+                  id="swap-amount"
+                  placeholder="100"
+                  required
+                />
+                <span class="hint"
+                  >Number of tokens to swap (e.g., 100 or 2.5)</span
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="swap-direction">Swap Direction *</label>
+                <select id="swap-direction" required>
+                  <option value="AtoB">A → B (e.g., SGPX → VNDX)</option>
+                  <option value="BtoA">B → A (e.g., VNDX → SGPX)</option>
+                </select>
+                <span class="hint"
+                  >Direction depends on swap contract configuration</span
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="swap-private-key">Private Key *</label>
+                <input
+                  type="password"
+                  id="swap-private-key"
+                  placeholder="Your private key"
+                  value="e9b1d63e8acd7fe676acb43afb390d4b0202dab61abec9cf2a561e4becb147de"
+                  required
+                />
+                <span class="hint"
+                  >Will be encrypted before sending to server</span
+                >
+              </div>
+
+              <button type="submit" class="btn btn-swap">
+                <span class="btn-text">🔄 Execute Swap</span>
+                <span class="spinner">⏳</span>
+              </button>
+            </form>
+
+            <div class="result" id="swap-execute-result"></div>
+          </div>
+        </div>
+
+        <!-- Get Quote Tab -->
+        <div class="swap-tab-content" id="swap-quote-tab">
+          <div class="card">
+            <h2>Get Swap Quote</h2>
+            <p class="description">
+              Check expected output amount without executing the swap
+            </p>
+
+            <form id="swap-quote-form" class="form">
+              <div class="form-group">
+                <label for="quote-contract">Swap Contract Address *</label>
+                <input
+                  type="text"
+                  id="quote-contract"
+                  placeholder="0x..."
+                  required
+                />
+                <span class="hint">The swap contract address</span>
+              </div>
+
+              <div class="form-group">
+                <label for="quote-amount">Amount In *</label>
+                <input
+                  type="text"
+                  id="quote-amount"
+                  placeholder="100"
+                  required
+                />
+                <span class="hint">Number of tokens</span>
+              </div>
+
+              <div class="form-group">
+                <label for="quote-direction">Direction *</label>
+                <select id="quote-direction" required>
+                  <option value="AtoB">A → B</option>
+                  <option value="BtoA">B → A</option>
+                </select>
+                <span class="hint">Swap direction</span>
+              </div>
+
+              <button type="submit" class="btn btn-info">
+                <span class="btn-text">💱 Get Quote</span>
+                <span class="spinner">⏳</span>
+              </button>
+            </form>
+
+            <div class="result" id="swap-quote-result"></div>
+          </div>
+        </div>
+
+        <!-- Swap Info Tab -->
+        <div class="swap-tab-content" id="swap-info-tab">
+          <div class="card">
+            <h2>Swap Contract Information</h2>
+            <p class="description">
+              View detailed information about a swap contract
+            </p>
+
+            <form id="swap-info-form" class="form">
+              <div class="form-group">
+                <label for="info-contract">Swap Contract Address *</label>
+                <input
+                  type="text"
+                  id="info-contract"
+                  placeholder="0x..."
+                  required
+                />
+                <span class="hint">The swap contract address</span>
+              </div>
+
+              <button type="submit" class="btn btn-info">
+                <span class="btn-text">ℹ️ Get Info</span>
+                <span class="spinner">⏳</span>
+              </button>
+            </form>
+
+            <div class="result" id="swap-info-result"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operations Section -->
+      <h2 class="section-title">⚡ Operations</h2>
+      <div class="tabs">
+        <button class="tab-button active" data-tab="mint">
+          <span class="icon">➕</span>
+          Mint Tokens
+        </button>
+        <button class="tab-button" data-tab="burn">
+          <span class="icon">🔥</span>
+          Burn Tokens
+        </button>
+        <button class="tab-button" data-tab="transfer">
+          <span class="icon">💸</span>
+          Transfer Tokens
+        </button>
+        <button class="tab-button" data-tab="balance">
+          <span class="icon">💰</span>
+          Check Balance
+        </button>
+      </div>
+
+      <!-- Mint Tab -->
+      <div class="tab-content active" id="mint-tab">
+        <div class="card">
+          <h2>Mint New Tokens</h2>
+          <p class="description">
+            Create new tokens and send them to a specified address
+          </p>
+
+          <form id="mint-form" class="form">
+            <div class="form-group">
+              <label for="mint-contract">Contract Address *</label>
+              <input
+                type="text"
+                id="mint-contract"
+                placeholder="0x..."
+                required
+              />
+              <span class="hint"
+                >The token contract address (VNDX, SGDX, etc.)</span
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="mint-to">Recipient Address *</label>
+              <input type="text" id="mint-to" placeholder="0x..." required />
+              <span class="hint"
+                >Address that will receive the minted tokens</span
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="mint-amount">Amount *</label>
+              <input type="text" id="mint-amount" placeholder="100" required />
+              <span class="hint">Number of tokens (e.g., 100 or 2.5)</span>
+            </div>
+
+            <div class="form-group">
+              <label for="mint-private-key">Private Key *</label>
+              <input
+                type="password"
+                id="mint-private-key"
+                placeholder="Your private key"
+                value="e9b1d63e8acd7fe676acb43afb390d4b0202dab61abec9cf2a561e4becb147de"
+                required
+              />
+              <span class="hint"
+                >Will be encrypted before sending to server</span
+              >
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <span class="btn-text">Mint Tokens</span>
+              <span class="spinner">⏳</span>
+            </button>
+          </form>
+
+          <div class="result" id="mint-result"></div>
+        </div>
+      </div>
+
+      <!-- Burn Tab -->
+      <div class="tab-content" id="burn-tab">
+        <div class="card">
+          <h2>Burn Tokens</h2>
+          <p class="description">
+            Permanently destroy tokens from your account
+          </p>
+
+          <form id="burn-form" class="form">
+            <div class="form-group">
+              <label for="burn-contract">Contract Address *</label>
+              <input
+                type="text"
+                id="burn-contract"
+                placeholder="0x..."
+                required
+              />
+              <span class="hint">The token contract address</span>
+            </div>
+
+            <div class="form-group">
+              <label for="burn-amount">Amount *</label>
+              <input type="text" id="burn-amount" placeholder="50" required />
+              <span class="hint">Number of tokens to burn</span>
+            </div>
+
+            <div class="form-group">
+              <label for="burn-private-key">Private Key *</label>
+              <input
+                type="password"
+                id="burn-private-key"
+                placeholder="Your private key"
+                required
+              />
+              <span class="hint"
+                >Will be encrypted before sending to server</span
+              >
+            </div>
+
+            <button type="submit" class="btn btn-danger">
+              <span class="btn-text">Burn Tokens</span>
+              <span class="spinner">⏳</span>
+            </button>
+          </form>
+
+          <div class="result" id="burn-result"></div>
+        </div>
+      </div>
+
+      <!-- Transfer Tab -->
+      <div class="tab-content" id="transfer-tab">
+        <div class="card">
+          <h2>Transfer Tokens</h2>
+          <p class="description">Send tokens to another address</p>
+
+          <form id="transfer-form" class="form">
+            <div class="form-group">
+              <label for="transfer-contract">Contract Address *</label>
+              <input
+                type="text"
+                id="transfer-contract"
+                placeholder="0x..."
+                required
+              />
+              <span class="hint">The token contract address</span>
+            </div>
+
+            <div class="form-group">
+              <label for="transfer-to">Recipient Address *</label>
+              <input
+                type="text"
+                id="transfer-to"
+                placeholder="0x..."
+                required
+              />
+              <span class="hint">Address that will receive the tokens</span>
+            </div>
+
+            <div class="form-group">
+              <label for="transfer-amount">Amount *</label>
+              <input
+                type="text"
+                id="transfer-amount"
+                placeholder="25.5"
+                required
+              />
+              <span class="hint">Number of tokens to transfer</span>
+            </div>
+
+            <div class="form-group">
+              <label for="transfer-private-key">Private Key *</label>
+              <input
+                type="password"
+                id="transfer-private-key"
+                placeholder="Your private key"
+                required
+              />
+              <span class="hint"
+                >Will be encrypted before sending to server</span
+              >
+            </div>
+
+            <button type="submit" class="btn btn-success">
+              <span class="btn-text">Transfer Tokens</span>
+              <span class="spinner">⏳</span>
+            </button>
+          </form>
+
+          <div class="result" id="transfer-result"></div>
+        </div>
+      </div>
+
+      <!-- Balance Tab -->
+      <div class="tab-content" id="balance-tab">
+        <div class="card">
+          <h2>Check Balance</h2>
+          <p class="description">View token balance for any address</p>
+
+          <form id="balance-form" class="form">
+            <div class="form-group">
+              <label for="balance-contract">Contract Address *</label>
+              <input
+                type="text"
+                id="balance-contract"
+                placeholder="0x..."
+                required
+              />
+              <span class="hint">The token contract address</span>
+            </div>
+
+            <div class="form-group">
+              <label for="balance-address">Address *</label>
+              <input
+                type="text"
+                id="balance-address"
+                placeholder="0x..."
+                required
+              />
+              <span class="hint">Address to check balance for</span>
+            </div>
+
+            <button type="submit" class="btn btn-info">
+              <span class="btn-text">Check Balance</span>
+              <span class="spinner">⏳</span>
+            </button>
+          </form>
+
+          <div class="result" id="balance-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="helper.js"></script>
+  </body>
+</html>

@@ -7,10 +7,9 @@ import (
 	"net/http"
 
 	"kokka.com/kokka/internal/applications/dtos"
-	"kokka.com/kokka/internal/applications/validators"
 	diSvc "kokka.com/kokka/internal/core/di/services"
 	"kokka.com/kokka/internal/shared/constant/status"
-	"kokka.com/kokka/internal/shared/utils/response"
+	"kokka.com/kokka/internal/shared/response"
 )
 
 // BlockchainController handles blockchain-related HTTP requests
@@ -74,12 +73,6 @@ func (c *BlockchainController) GetBalance(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Validate request
-	if err := validators.ValidateGetBalanceRequest(&req); err != nil {
-		response.WriteJson(w, ctx, nil, err, status.FAIL)
-		return
-	}
-
 	// Call service
 	result, err := c.blockchainService.GetBalance(ctx, &req)
 	if err != nil {
@@ -97,12 +90,6 @@ func (c *BlockchainController) GetBlock(w http.ResponseWriter, r *http.Request) 
 	var req dtos.GetBlockRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.WriteJson(w, r.Context(), nil, fmt.Errorf("invalid parameters"), status.FAIL)
-		return
-	}
-
-	// Validate request
-	if err := validators.ValidateGetBlockRequest(&req); err != nil {
-		response.WriteJson(w, ctx, nil, err, status.FAIL)
 		return
 	}
 
@@ -126,12 +113,6 @@ func (c *BlockchainController) GetTransaction(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// Validate request
-	if err := validators.ValidateGetTransactionRequest(&req); err != nil {
-		response.WriteJson(w, ctx, nil, err, status.FAIL)
-		return
-	}
-
 	// Call service
 	result, err := c.blockchainService.GetTransaction(ctx, &req)
 	if err != nil {
@@ -149,12 +130,6 @@ func (c *BlockchainController) CallContract(w http.ResponseWriter, r *http.Reque
 	var req dtos.CallContractRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.WriteJson(w, r.Context(), nil, fmt.Errorf("invalid parameters"), status.FAIL)
-		return
-	}
-
-	// Validate request
-	if err := validators.ValidateCallContractRequest(&req); err != nil {
-		response.WriteJson(w, ctx, nil, err, status.FAIL)
 		return
 	}
 
@@ -178,12 +153,6 @@ func (c *BlockchainController) EstimateGas(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// Validate request
-	if err := validators.ValidateEstimateGasRequest(&req); err != nil {
-		response.WriteJson(w, ctx, nil, err, status.FAIL)
-		return
-	}
-
 	// Call service
 	result, err := c.blockchainService.EstimateGas(ctx, &req)
 	if err != nil {
@@ -204,12 +173,6 @@ func (c *BlockchainController) SendRawTransaction(w http.ResponseWriter, r *http
 		return
 	}
 
-	// Validate request
-	if err := validators.ValidateSendRawTransactionRequest(&req); err != nil {
-		response.WriteJson(w, ctx, nil, err, status.FAIL)
-		return
-	}
-
 	// Call service
 	result, err := c.blockchainService.SendRawTransaction(ctx, &req)
 	if err != nil {
@@ -220,8 +183,27 @@ func (c *BlockchainController) SendRawTransaction(w http.ResponseWriter, r *http
 	response.WriteJson(w, ctx, result, nil, status.OK)
 }
 
+// SignAndSendTransaction handles POST /blockchain/sign-and-send
+func (c *BlockchainController) SignAndSendTransaction(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req dtos.SignAndSendTransactionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, r.Context(), nil, fmt.Errorf("invalid parameters"), status.FAIL)
+		return
+	}
+
+	// Call service
+	result, err := c.blockchainService.SignAndSendTransaction(ctx, &req)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.OK)
+}
+
 // GenericRPCCall handles POST /blockchain/rpc
-// This allows calling any JSON-RPC method directly
 func (c *BlockchainController) GenericRPCCall(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -235,12 +217,6 @@ func (c *BlockchainController) GenericRPCCall(w http.ResponseWriter, r *http.Req
 
 	var req dtos.GenericRPCRequest
 	if err := json.Unmarshal(body, &req); err != nil {
-		response.WriteJson(w, ctx, nil, err, status.FAIL)
-		return
-	}
-
-	// Validate request
-	if err := validators.ValidateGenericRPCRequest(&req); err != nil {
 		response.WriteJson(w, ctx, nil, err, status.FAIL)
 		return
 	}

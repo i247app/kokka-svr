@@ -1,8 +1,11 @@
 package http_client
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -37,8 +40,33 @@ func (i *LoggingInterceptor) Before(ctx context.Context, req *http.Request) erro
 
 	logger.Infof("[HTTP Client] %s %s", req.Method, req.URL.String())
 
+	if req.Header != nil {
+		logger.Info("[HTTP Client] Request Headers")
+		for key, values := range req.Header {
+			for _, value := range values {
+				logger.Infof("%s: %s", key, value)
+			}
+		}
+	}
+
 	if i.LogBody && req.Body != nil {
-		logger.Debugf("[HTTP Client] Request Headers: %v", req.Header)
+		// Read the request body
+		requestBody, err := io.ReadAll(req.Body)
+		if err != nil {
+			return fmt.Errorf("%v failed to read request body: %w", req.URL.Path, err)
+		}
+
+		// IMPORTANT: Restore the body so it can be read again by the HTTP client
+		req.Body = io.NopCloser(bytes.NewBuffer(requestBody))
+
+		// Try to pretty-print as JSON, fallback to raw string if not valid JSON
+		var prettyJSON bytes.Buffer
+		if err := json.Indent(&prettyJSON, requestBody, "", "  "); err == nil {
+			logger.Infof("[HTTP Client] Request Body:\n%s", prettyJSON.String())
+		} else {
+			// Not valid JSON, just log as-is
+			logger.Infof("[HTTP Client] Request Body: %s", string(requestBody))
+		}
 	}
 
 	return nil
@@ -51,7 +79,13 @@ func (i *LoggingInterceptor) After(ctx context.Context, resp *Response) error {
 	logger.Infof("[HTTP Client] Response Status: %d", resp.StatusCode)
 
 	if i.LogBody {
-		logger.Debugf("[HTTP Client] Response Body: %s", string(resp.Body))
+		var prettyJSON bytes.Buffer
+		if err := json.Indent(&prettyJSON, resp.Body, "", "  "); err == nil {
+			logger.Infof("[HTTP Client] Response Body:\n%s", prettyJSON.String())
+		} else {
+			// Not valid JSON, just log as-is
+			logger.Infof("[HTTP Client] Response Body: %s", string(resp.Body))
+		}
 	}
 
 	return nil

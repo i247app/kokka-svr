@@ -7,8 +7,25 @@ import (
 	"kokka.com/kokka/internal/applications/dtos"
 )
 
+type IBlockchainValidator interface {
+	ValidateGetBalanceRequest(req *dtos.GetBalanceRequest) error
+	ValidateGetBlockRequest(req *dtos.GetBlockRequest) error
+	ValidateGetTransactionRequest(req *dtos.GetTransactionRequest) error
+	ValidateCallContractRequest(req *dtos.CallContractRequest) error
+	ValidateEstimateGasRequest(req *dtos.EstimateGasRequest) error
+	ValidateSendRawTransactionRequest(req *dtos.SendRawTransactionRequest) error
+	ValidateSignAndSendTransactionRequest(req *dtos.SignAndSendTransactionRequest) error
+	ValidateGenericRPCRequest(req *dtos.GenericRPCRequest) error
+}
+
+type blockchainValidator struct{}
+
+func NewBlockChainValidator() *blockchainValidator {
+	return &blockchainValidator{}
+}
+
 // ValidateGetBalanceRequest validates a get balance request
-func ValidateGetBalanceRequest(req *dtos.GetBalanceRequest) error {
+func (v *blockchainValidator) ValidateGetBalanceRequest(req *dtos.GetBalanceRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
@@ -30,7 +47,7 @@ func ValidateGetBalanceRequest(req *dtos.GetBalanceRequest) error {
 }
 
 // ValidateGetBlockRequest validates a get block request
-func ValidateGetBlockRequest(req *dtos.GetBlockRequest) error {
+func (v *blockchainValidator) ValidateGetBlockRequest(req *dtos.GetBlockRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
@@ -47,7 +64,7 @@ func ValidateGetBlockRequest(req *dtos.GetBlockRequest) error {
 }
 
 // ValidateGetTransactionRequest validates a get transaction request
-func ValidateGetTransactionRequest(req *dtos.GetTransactionRequest) error {
+func (v *blockchainValidator) ValidateGetTransactionRequest(req *dtos.GetTransactionRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
@@ -64,7 +81,7 @@ func ValidateGetTransactionRequest(req *dtos.GetTransactionRequest) error {
 }
 
 // ValidateCallContractRequest validates a call contract request
-func ValidateCallContractRequest(req *dtos.CallContractRequest) error {
+func (v *blockchainValidator) ValidateCallContractRequest(req *dtos.CallContractRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
@@ -77,11 +94,11 @@ func ValidateCallContractRequest(req *dtos.CallContractRequest) error {
 		return errors.New("invalid to address format")
 	}
 
-	if req.Value == "" {
+	if req.Data == "" {
 		return errors.New("data is required")
 	}
 
-	if !isValidHexData(req.Value) {
+	if !isValidHexData(req.Data) {
 		return errors.New("invalid data format (must be hex string with 0x prefix)")
 	}
 
@@ -94,7 +111,7 @@ func ValidateCallContractRequest(req *dtos.CallContractRequest) error {
 }
 
 // ValidateEstimateGasRequest validates an estimate gas request
-func ValidateEstimateGasRequest(req *dtos.EstimateGasRequest) error {
+func (v *blockchainValidator) ValidateEstimateGasRequest(req *dtos.EstimateGasRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
@@ -120,7 +137,7 @@ func ValidateEstimateGasRequest(req *dtos.EstimateGasRequest) error {
 }
 
 // ValidateSendRawTransactionRequest validates a send raw transaction request
-func ValidateSendRawTransactionRequest(req *dtos.SendRawTransactionRequest) error {
+func (v *blockchainValidator) ValidateSendRawTransactionRequest(req *dtos.SendRawTransactionRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
@@ -136,8 +153,50 @@ func ValidateSendRawTransactionRequest(req *dtos.SendRawTransactionRequest) erro
 	return nil
 }
 
+// ValidateSignAndSendTransactionRequest validates a sign and send transaction request
+func (v *blockchainValidator) ValidateSignAndSendTransactionRequest(req *dtos.SignAndSendTransactionRequest) error {
+	if req == nil {
+		return errors.New("request cannot be nil")
+	}
+
+	if req.To == "" {
+		return errors.New("to address is required")
+	}
+
+	if !isValidEthereumAddress(req.To) {
+		return errors.New("invalid to address format")
+	}
+
+	// Value is optional, but if provided, should be valid hex
+	if req.Value != "" && !isValidHexData(req.Value) {
+		return errors.New("invalid value format (must be hex string with 0x prefix)")
+	}
+
+	// Data is optional, but if provided, should be valid hex
+	if req.Data != "" && !isValidHexData(req.Data) {
+		return errors.New("invalid data format (must be hex string with 0x prefix)")
+	}
+
+	// GasLimit is optional, but if provided, should be valid hex
+	if req.GasLimit != "" && !isValidHexData(req.GasLimit) {
+		return errors.New("invalid gas_limit format (must be hex string with 0x prefix)")
+	}
+
+	// GasPrice is optional, but if provided, should be valid hex
+	if req.GasPrice != "" && !isValidHexData(req.GasPrice) {
+		return errors.New("invalid gas_price format (must be hex string with 0x prefix)")
+	}
+
+	// Nonce is optional, but if provided, should be valid hex
+	if req.Nonce != "" && !isValidHexData(req.Nonce) {
+		return errors.New("invalid nonce format (must be hex string with 0x prefix)")
+	}
+
+	return nil
+}
+
 // ValidateGenericRPCRequest validates a generic RPC request
-func ValidateGenericRPCRequest(req *dtos.GenericRPCRequest) error {
+func (v *blockchainValidator) ValidateGenericRPCRequest(req *dtos.GenericRPCRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
 	}
@@ -181,10 +240,10 @@ func isValidHexData(data string) bool {
 	if !strings.HasPrefix(data, "0x") {
 		return false
 	}
-	// Data must have even length (excluding 0x prefix)
-	if len(data[2:])%2 != 0 {
-		return false
-	}
+	// // Data must have even length (excluding 0x prefix)
+	// if len(data[2:])%2 != 0 {
+	// 	return false
+	// }
 	return isValidHex(data[2:])
 }
 

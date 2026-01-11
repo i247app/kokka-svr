@@ -9,8 +9,6 @@ import (
 	"maps"
 	"net/http"
 	"time"
-
-	"kokka.com/kokka/internal/shared/logger"
 )
 
 // Client is the base HTTP client for making external API calls
@@ -95,8 +93,6 @@ func (c *Client) Do(ctx context.Context, method, path string, body interface{}, 
 
 // buildRequest constructs an HTTP request with all configurations applied
 func (c *Client) buildRequest(ctx context.Context, method, path string, body interface{}, opts ...RequestOption) (*http.Request, error) {
-	logger := logger.GetLogger(ctx)
-
 	// Create request config with client defaults
 	reqConfig := &RequestConfig{
 		headers:     make(map[string]string),
@@ -126,8 +122,6 @@ func (c *Client) buildRequest(ctx context.Context, method, path string, body int
 			return nil, fmt.Errorf("failed to marshal body: %w", err)
 		}
 		bodyReader = bytes.NewReader(jsonBody)
-
-		logger.Info(string(jsonBody))
 
 		// Set Content-Type if not already set
 		if _, exists := reqConfig.headers["Content-Type"]; !exists {

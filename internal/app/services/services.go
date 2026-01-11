@@ -1,14 +1,19 @@
 package services
 
 import (
+	"fmt"
+
 	"kokka.com/kokka/internal/app/resources"
 	"kokka.com/kokka/internal/applications/services"
+	"kokka.com/kokka/internal/applications/validators"
 	diSvc "kokka.com/kokka/internal/core/di/services"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
 )
 
 type ServiceContainer struct {
 	BlockchainService diSvc.IBlockChainService
+	TokenService      diSvc.ITokenService
+	SwapService       diSvc.ISwapService
 }
 
 func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error) {
@@ -19,12 +24,35 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 	}
 	blockchainClient := blockchain.NewClient(blockchainConfig)
 
-	// Initialize blockchain service
-	blockchainService := services.NewBlockchainService(blockchainClient)
+	// Initialize blockchain service (no global signer - uses per-request signing)
+	blockChainValidator := validators.NewBlockChainValidator()
+	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, res.Env.BlockchainConfig.DecryptionKey)
 
-	// Initialize blockchain controller
+	// Initialize Token service (uses per-request signers, no global signer needed)
+	tokenValidator := validators.NewTokenValidator()
+	tokenService, err := services.NewTokenService(
+		tokenValidator,
+		blockchainClient,
+		res.Env.BlockchainConfig.DecryptionKey,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize token service: %w", err)
+	}
+
+	// Initialize Swap service (uses per-request signers, no global signer needed)
+	swapValidator := validators.NewSwapValidator()
+	swapService, err := services.NewSwapService(
+		swapValidator,
+		blockchainClient,
+		res.Env.BlockchainConfig.DecryptionKey,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize swap service: %w", err)
+	}
 
 	return &ServiceContainer{
 		BlockchainService: blockchainService,
+		TokenService:      tokenService,
+		SwapService:       swapService,
 	}, nil
 }

@@ -33,11 +33,11 @@ func WriteJson(w http.ResponseWriter, ctx context.Context, data any, err error, 
 
 	// Default to not set if not set
 	if statusCode != 0 {
-		payload["mstatus"] = statusCode
+		payload["kstatus"] = statusCode
 	}
 
-	if (payload["mmessage"] == "Unknown" || payload["message"] == "") && err != nil {
-		payload["mmessage"] = err.Error()
+	if (payload["kmessage"] == "Unknown" || payload["message"] == "") && err != nil {
+		payload["kmessage"] = err.Error()
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

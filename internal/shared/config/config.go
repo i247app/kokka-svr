@@ -10,15 +10,16 @@ import (
 )
 
 type Env struct {
-	DBEnv            *DBConfig
-	ServerEnv        *ServerConfig
-	HostConfig       *HostConfig
-	TwilioConfig     *TwilioConfig
-	MailerConfig     *MailerConfig
-	S3Config         *S3Config
-	BlockchainConfig *BlockchainConfig
-	SharedKeyBytes   []byte
-	LogFile          string
+	DBEnv                 *DBConfig
+	HostConfig            *HostConfig
+	TwilioConfig          *TwilioConfig
+	MailerConfig          *MailerConfig
+	S3Config              *S3Config
+	BlockchainConfig      *BlockchainConfig
+	SharedKeyBytes        []byte
+	GexSessionDriver      string
+	LogFile               string
+	SerializedSessionFile string
 }
 
 func NewEnv(envpath string) (*Env, error) {
@@ -35,10 +36,6 @@ func NewEnv(envpath string) (*Env, error) {
 			Password: getConfig("DB_PASSWORD"),
 			Name:     getConfig("DB_NAME"),
 			SSLMode:  getConfig("DB_SSL_MODE"),
-		},
-		ServerEnv: &ServerConfig{
-			Port:        getConfig("SERVER_PORT"),
-			LogFilePath: getConfig("LOG_FILE_PATH"),
 		},
 		HostConfig: &HostConfig{
 			ServerMode:    getConfig("SERVER_MODE"),
@@ -67,10 +64,13 @@ func NewEnv(envpath string) (*Env, error) {
 			Bucket:    getConfig("S3_BUCKET"),
 		},
 		BlockchainConfig: &BlockchainConfig{
-			RPCURL: getConfigWithDefault("BLOCKCHAIN_RPC_URL", "https://x24.i247.com"),
+			RPCURL:        getConfigWithDefault("BLOCKCHAIN_RPC_URL", "https://x24.i247.com"),
+			DecryptionKey: getConfig("DECRYPTION_KEY"),
 		},
-		SharedKeyBytes: getFileBytesConfig("GEX_SHARED_KEY"),
-		LogFile:        getConfig("LOG_FILE_PATH"),
+		SharedKeyBytes:        getFileBytesConfig("GEX_SHARED_KEY"),
+		GexSessionDriver:      getConfig("GEX_SESSION_DRIVER"),
+		LogFile:               getConfig("LOG_FILE_PATH"),
+		SerializedSessionFile: getConfig("SERIALIZED_SESSION_FILE"),
 	}
 
 	return result, nil

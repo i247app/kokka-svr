@@ -8,6 +8,9 @@ log_file
 .cursor/
 .claude/
 CLAUDE.md
+CHAIN.md
+VNDX_IMPLEMENTATION_SUMMARY.md
+SWAP_SERVICE.md
 
 # go workspace files
 go.work
@@ -26,6 +29,5 @@ keys/
 dist/
 .aider*
 CONVENTIONS.md
-BLOCKCHAIN_API_GUIDE.md
 graphql-examples.http
 

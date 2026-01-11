@@ -1,9 +1,8 @@
-.PHONY: build run tidy migrate-create login migrate-up migrate-down migrate-up-deploy migrate-down-deploy login build-ec2 init-deploy deploy-ec2-remote
+.PHONY: build run tidy migrate-create login migrate-up migrate-down migrate-up-deploy migrate-down-deploy login build-ec2 init-deploy deploy-ec2-remote gen-abi
 
 ## run: Run the app.
 run:
 	@go run ./cmd/server
-
 
 # Get list of .sql files from the up/ directory, sorted from old to new
 MIGRATE_UP_FILES := $(shell ls migrations/up/*.sql | sort)
@@ -73,18 +72,11 @@ migrate-down-deploy:
 	fi
 	@echo "✅ All DOWN migrations completed."
 
+# login to aws via ssh tunnel
 login:
 	@./bin/login.sh
 
-
-## list-models: List all available Google AI models
-list-models:
-	@if [ ! -f ./bin/list-models ]; then \
-		echo "Building list-models utility..."; \
-		go build -o bin/list-models ./cmd/list-models; \
-	fi
-	@./bin/list-models
-
+# tidy go modules
 tidy:
 	go mod tidy
 
@@ -96,7 +88,7 @@ build: tidy
 build-ec2: tidy
 	GOOS=linux GOARCH=arm64 go build -o dist/server ./cmd/server
 	
-# chmod +x bin/init_deploy.sh
+# chmod +x bin/init-deploy
 init-deploy:
 	@echo "make[$@] init deploy from mac to ec2..."
 	./bin/init_deploy.sh
@@ -108,5 +100,18 @@ deploy-ec2-remote: build-ec2
 	./bin/remote_deploy.sh
 	@echo "make[$@] done"
 
+# generate Go bindings from ERC20 contract ABI
+gen-erc20-abi:
+	@echo "Generating Go bindings from ERC20 ABI..."
+	@mkdir -p internal/driven-adapter/external/blockchain/gen
+	@abigen --abi=contracts/erc20.abi --pkg=erc20 --type=ERC20 --out=internal/driven-adapter/external/blockchain/gen/erc20/erc20.go
+	@echo "✅ Go bindings generated successfully!"
 
-## login: Login to AWS
+# generate Go bindings from swap contract ABI
+gen-swap-abi:
+	@echo "Generating Go bindings from Swap ABI..."
+	@mkdir -p internal/driven-adapter/external/blockchain/gen
+	@abigen --abi=contracts/swap.abi --pkg=swap --type=Swap --out=internal/driven-adapter/external/blockchain/gen/swap/swap.go
+	@echo "✅ Go bindings generated successfully!"
+
+

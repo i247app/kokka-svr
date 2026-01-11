@@ -45,5 +45,6 @@ type S3Config struct {
 }
 
 type BlockchainConfig struct {
-	RPCURL string
+	RPCURL        string
+	DecryptionKey string // AES-256 decryption key for decrypting client-provided private keys (32-byte hex string)
 }

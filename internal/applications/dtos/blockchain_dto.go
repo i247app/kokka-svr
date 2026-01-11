@@ -1,9 +1,5 @@
 package dtos
 
-// ========================================
-// Request DTOs (from client to server)
-// ========================================
-
 // GetBalanceRequest represents a request to get an address balance
 type GetBalanceRequest struct {
 	Address string `json:"address"`
@@ -24,7 +20,7 @@ type GetTransactionRequest struct {
 // CallContractRequest represents a request to call a contract method (read-only)
 type CallContractRequest struct {
 	To    string `json:"to"`
-	Value string `json:"value"`
+	Data  string `json:"data"`            // Contract call data (hex string)
 	Block string `json:"block,omitempty"` // Optional, defaults to "latest"
 }
 
@@ -40,16 +36,24 @@ type SendRawTransactionRequest struct {
 	SignedTx string `json:"signed_tx"`
 }
 
+// SignAndSendTransactionRequest represents a request to sign and send a transaction
+// The server will sign the transaction using its private key
+type SignAndSendTransactionRequest struct {
+	EncryptedPrivateKey string `json:"encrypted_private_key"` // Encrypted private key to sign the transaction
+	To                  string `json:"to"`                    // Recipient address (required)
+	Value               string `json:"value,omitempty"`       // Amount in wei (hex string, e.g., "0x0" for 0 wei)
+	Data                string `json:"data,omitempty"`        // Optional: contract call data (hex string)
+	GasLimit            string `json:"gas_limit,omitempty"`   // Optional: gas limit (hex string, auto-estimated if not provided)
+	GasPrice            string `json:"gas_price,omitempty"`   // Optional: gas price (hex string, fetched from network if not provided)
+	Nonce               string `json:"nonce,omitempty"`       // Optional: transaction nonce (hex string, fetched from network if not provided)
+}
+
 // GenericRPCRequest represents a generic JSON-RPC request
 // This allows clients to call any RPC method directly
 type GenericRPCRequest struct {
 	Method string      `json:"method"`
 	Params interface{} `json:"params"`
 }
-
-// ========================================
-// Response DTOs (from server to client)
-// ========================================
 
 // GetBalanceResponse represents the response for balance query
 type GetBalanceResponse struct {
@@ -86,6 +90,12 @@ type EstimateGasResponse struct {
 // SendRawTransactionResponse represents the response for transaction broadcast
 type SendRawTransactionResponse struct {
 	TxHash string `json:"tx_hash"` // Transaction hash
+}
+
+// SignAndSendTransactionResponse represents the response for sign and send transaction
+type SignAndSendTransactionResponse struct {
+	TxHash      string `json:"tx_hash"`      // Transaction hash
+	FromAddress string `json:"from_address"` // Address that signed and sent the transaction
 }
 
 // GetGasPriceResponse represents the response for current gas price
