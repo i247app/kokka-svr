@@ -68,6 +68,176 @@
         </div>
       </div>
 
+      <!-- Swap Section -->
+      <div class="swap-section">
+        <h2 class="section-title">🔄 Token Swap</h2>
+
+        <div class="swap-tabs">
+          <button class="swap-tab-button active" data-swap-tab="swap-execute">
+            <span class="icon">↔️</span>
+            Execute Swap
+          </button>
+          <button class="swap-tab-button" data-swap-tab="swap-quote">
+            <span class="icon">💱</span>
+            Get Quote
+          </button>
+          <button class="swap-tab-button" data-swap-tab="swap-info">
+            <span class="icon">ℹ️</span>
+            Swap Info
+          </button>
+        </div>
+
+        <!-- Execute Swap Tab -->
+        <div class="swap-tab-content active" id="swap-execute-tab">
+          <div class="card">
+            <h2>Execute Token Swap</h2>
+            <p class="description">
+              Swap tokens between different stablecoins (e.g., VNDX ↔ SGPX)
+            </p>
+
+            <form id="swap-execute-form" class="form">
+              <div class="form-group">
+                <label for="swap-contract">Swap Contract Address *</label>
+                <input
+                  type="text"
+                  id="swap-contract"
+                  placeholder="0x..."
+                  required
+                />
+                <span class="hint"
+                  >The swap contract address for the token pair</span
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="swap-amount">Amount In *</label>
+                <input
+                  type="text"
+                  id="swap-amount"
+                  placeholder="100"
+                  required
+                />
+                <span class="hint"
+                  >Number of tokens to swap (e.g., 100 or 2.5)</span
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="swap-direction">Swap Direction *</label>
+                <select id="swap-direction" required>
+                  <option value="AtoB">A → B (e.g., SGPX → VNDX)</option>
+                  <option value="BtoA">B → A (e.g., VNDX → SGPX)</option>
+                </select>
+                <span class="hint"
+                  >Direction depends on swap contract configuration</span
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="swap-private-key">Private Key *</label>
+                <input
+                  type="password"
+                  id="swap-private-key"
+                  placeholder="Your private key"
+                  value="e9b1d63e8acd7fe676acb43afb390d4b0202dab61abec9cf2a561e4becb147de"
+                  required
+                />
+                <span class="hint"
+                  >Will be encrypted before sending to server</span
+                >
+              </div>
+
+              <button type="submit" class="btn btn-swap">
+                <span class="btn-text">🔄 Execute Swap</span>
+                <span class="spinner">⏳</span>
+              </button>
+            </form>
+
+            <div class="result" id="swap-execute-result"></div>
+          </div>
+        </div>
+
+        <!-- Get Quote Tab -->
+        <div class="swap-tab-content" id="swap-quote-tab">
+          <div class="card">
+            <h2>Get Swap Quote</h2>
+            <p class="description">
+              Check expected output amount without executing the swap
+            </p>
+
+            <form id="swap-quote-form" class="form">
+              <div class="form-group">
+                <label for="quote-contract">Swap Contract Address *</label>
+                <input
+                  type="text"
+                  id="quote-contract"
+                  placeholder="0x..."
+                  required
+                />
+                <span class="hint">The swap contract address</span>
+              </div>
+
+              <div class="form-group">
+                <label for="quote-amount">Amount In *</label>
+                <input
+                  type="text"
+                  id="quote-amount"
+                  placeholder="100"
+                  required
+                />
+                <span class="hint">Number of tokens</span>
+              </div>
+
+              <div class="form-group">
+                <label for="quote-direction">Direction *</label>
+                <select id="quote-direction" required>
+                  <option value="AtoB">A → B</option>
+                  <option value="BtoA">B → A</option>
+                </select>
+                <span class="hint">Swap direction</span>
+              </div>
+
+              <button type="submit" class="btn btn-info">
+                <span class="btn-text">💱 Get Quote</span>
+                <span class="spinner">⏳</span>
+              </button>
+            </form>
+
+            <div class="result" id="swap-quote-result"></div>
+          </div>
+        </div>
+
+        <!-- Swap Info Tab -->
+        <div class="swap-tab-content" id="swap-info-tab">
+          <div class="card">
+            <h2>Swap Contract Information</h2>
+            <p class="description">
+              View detailed information about a swap contract
+            </p>
+
+            <form id="swap-info-form" class="form">
+              <div class="form-group">
+                <label for="info-contract">Swap Contract Address *</label>
+                <input
+                  type="text"
+                  id="info-contract"
+                  placeholder="0x..."
+                  required
+                />
+                <span class="hint">The swap contract address</span>
+              </div>
+
+              <button type="submit" class="btn btn-info">
+                <span class="btn-text">ℹ️ Get Info</span>
+                <span class="spinner">⏳</span>
+              </button>
+            </form>
+
+            <div class="result" id="swap-info-result"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Operations Section -->
       <h2 class="section-title">⚡ Operations</h2>
       <div class="tabs">

@@ -129,6 +129,25 @@ document.querySelectorAll(".tab-button").forEach((button) => {
   });
 });
 
+// Tab switching for swap section
+document.querySelectorAll(".swap-tab-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const tabName = button.getAttribute("data-swap-tab");
+
+    // Update button states
+    document
+      .querySelectorAll(".swap-tab-button")
+      .forEach((btn) => btn.classList.remove("active"));
+    button.classList.add("active");
+
+    // Update tab content
+    document
+      .querySelectorAll(".swap-tab-content")
+      .forEach((content) => content.classList.remove("active"));
+    document.getElementById(`${tabName}-tab`).classList.add("active");
+  });
+});
+
 // Load contract information
 async function loadContractInfo(contractKey) {
   const contract = CONTRACTS[contractKey];
@@ -367,6 +386,102 @@ window.fillDemoData = function () {
   document.getElementById("mint-private-key").value =
     "e9b1d63e8acd7fe676acb43afb390d4b0202dab61abec9cf2a561e4becb147de";
 };
+
+// Swap Execute Form
+document
+  .getElementById("swap-execute-form")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const button = e.target.querySelector('button[type="submit"]');
+    setLoading(button, true);
+
+    try {
+      const contractAddress = document
+        .getElementById("swap-contract")
+        .value.trim();
+      const amountIn = document.getElementById("swap-amount").value.trim();
+      const direction = document.getElementById("swap-direction").value;
+      const privateKey = document
+        .getElementById("swap-private-key")
+        .value.trim();
+
+      // Encrypt private key
+      const encryptedPrivateKey = encryptPrivateKey(privateKey);
+
+      // Call API
+      const result = await apiCall("/swap", "POST", {
+        contract_address: contractAddress,
+        amount_in: amountIn,
+        direction: direction,
+        encrypted_private_key: encryptedPrivateKey,
+      });
+
+      showResult("swap-execute-result", true, result);
+
+      // Clear private key field for security
+      document.getElementById("swap-private-key").value = "";
+    } catch (error) {
+      showResult("swap-execute-result", false, error.message);
+    } finally {
+      setLoading(button, false);
+    }
+  });
+
+// Swap Quote Form
+document
+  .getElementById("swap-quote-form")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const button = e.target.querySelector('button[type="submit"]');
+    setLoading(button, true);
+
+    try {
+      const contractAddress = document
+        .getElementById("quote-contract")
+        .value.trim();
+      const amountIn = document.getElementById("quote-amount").value.trim();
+      const direction = document.getElementById("quote-direction").value;
+
+      // Call API
+      const result = await apiCall("/swap/quote", "POST", {
+        contract_address: contractAddress,
+        amount_in: amountIn,
+        direction: direction,
+      });
+
+      showResult("swap-quote-result", true, result);
+    } catch (error) {
+      showResult("swap-quote-result", false, error.message);
+    } finally {
+      setLoading(button, false);
+    }
+  });
+
+// Swap Info Form
+document
+  .getElementById("swap-info-form")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const button = e.target.querySelector('button[type="submit"]');
+    setLoading(button, true);
+
+    try {
+      const contractAddress = document
+        .getElementById("info-contract")
+        .value.trim();
+
+      // Call API
+      const result = await apiCall("/swap/info", "POST", {
+        contract_address: contractAddress,
+      });
+
+      showResult("swap-info-result", true, result);
+    } catch (error) {
+      showResult("swap-info-result", false, error.message);
+    } finally {
+      setLoading(button, false);
+    }
+  });
 
 // Add demo button in console
 console.log(
