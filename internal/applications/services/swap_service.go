@@ -8,15 +8,15 @@ import (
 	"kokka.com/kokka/internal/applications/dtos"
 	"kokka.com/kokka/internal/applications/validators"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
-	"kokka.com/kokka/internal/shared/utils/crypto"
+	"kokka.com/kokka/internal/shared/utils"
 )
 
 // SwapService handles swap business logic
 type SwapService struct {
-	validator           validators.ISwapValidator
-	client              *blockchain.Client
-	decryptionKey       string
-	readOnlySwapClient  *blockchain.SwapClient
+	validator          validators.ISwapValidator
+	client             *blockchain.Client
+	decryptionKey      string
+	readOnlySwapClient *blockchain.SwapClient
 }
 
 // NewSwapService creates a new swap service
@@ -53,7 +53,7 @@ func (s *SwapService) Swap(ctx context.Context, req *dtos.SwapTokenRequest) (*dt
 	}
 
 	// Decrypt private key
-	privateKey, err := crypto.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	privateKey, err := utils.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
 	}

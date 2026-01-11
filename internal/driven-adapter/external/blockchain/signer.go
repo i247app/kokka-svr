@@ -107,7 +107,7 @@ func (s *TransactionSigner) SignAndSendTransaction(ctx context.Context, req *Sig
 		gasLimit = gasLimitBig.Uint64()
 	} else if req.Data != "" {
 		// If data is present, estimate gas
-		estimatedGasHex, err := s.client.EstimateGasWithData(ctx, s.GetAddress(), req.To, req.Value, req.Data)
+		estimatedGasHex, err := s.client.EstimateGas(ctx, s.GetAddress(), req.To, req.Value, req.Data)
 		if err != nil {
 			return "", fmt.Errorf("failed to estimate gas: %w", err)
 		}

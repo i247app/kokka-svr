@@ -9,7 +9,7 @@ import (
 	"kokka.com/kokka/internal/applications/dtos"
 	diSvc "kokka.com/kokka/internal/core/di/services"
 	"kokka.com/kokka/internal/shared/constant/status"
-	"kokka.com/kokka/internal/shared/utils/response"
+	"kokka.com/kokka/internal/shared/response"
 )
 
 // BlockchainController handles blockchain-related HTTP requests

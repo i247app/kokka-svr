@@ -26,7 +26,7 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 
 	// Initialize blockchain service (no global signer - uses per-request signing)
 	blockChainValidator := validators.NewBlockChainValidator()
-	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, nil)
+	blockchainService := services.NewBlockchainService(blockChainValidator, blockchainClient, res.Env.BlockchainConfig.DecryptionKey)
 
 	// Initialize Token service (uses per-request signers, no global signer needed)
 	tokenValidator := validators.NewTokenValidator()

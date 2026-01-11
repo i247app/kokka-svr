@@ -180,30 +180,8 @@ func (c *Client) CallContract(ctx context.Context, to string, data string, block
 	return result, nil
 }
 
-// EstimateGas estimates gas for a transaction
-func (c *Client) EstimateGas(ctx context.Context, from, to, value string) (string, error) {
-	txObject := map[string]interface{}{
-		"from":  from,
-		"to":    to,
-		"value": value,
-	}
-	params := []interface{}{txObject}
-
-	resp, err := c.Call(ctx, "eth_estimateGas", params)
-	if err != nil {
-		return "", fmt.Errorf("failed to estimate gas: %w", err)
-	}
-
-	result, err := resp.GetResultAsString()
-	if err != nil {
-		return "", fmt.Errorf("failed to parse gas estimate: %w", err)
-	}
-
-	return result, nil
-}
-
 // EstimateGasWithData estimates gas for a transaction with contract data
-func (c *Client) EstimateGasWithData(ctx context.Context, from, to, value, data string) (string, error) {
+func (c *Client) EstimateGas(ctx context.Context, from, to, value, data string) (string, error) {
 	txObject := map[string]interface{}{
 		"from": from,
 		"to":   to,

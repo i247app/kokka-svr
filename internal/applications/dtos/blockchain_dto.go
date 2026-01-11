@@ -39,12 +39,13 @@ type SendRawTransactionRequest struct {
 // SignAndSendTransactionRequest represents a request to sign and send a transaction
 // The server will sign the transaction using its private key
 type SignAndSendTransactionRequest struct {
-	To       string `json:"to"`                  // Recipient address (required)
-	Value    string `json:"value,omitempty"`     // Amount in wei (hex string, e.g., "0x0" for 0 wei)
-	Data     string `json:"data,omitempty"`      // Optional: contract call data (hex string)
-	GasLimit string `json:"gas_limit,omitempty"` // Optional: gas limit (hex string, auto-estimated if not provided)
-	GasPrice string `json:"gas_price,omitempty"` // Optional: gas price (hex string, fetched from network if not provided)
-	Nonce    string `json:"nonce,omitempty"`     // Optional: transaction nonce (hex string, fetched from network if not provided)
+	EncryptedPrivateKey string `json:"encrypted_private_key"` // Encrypted private key to sign the transaction
+	To                  string `json:"to"`                    // Recipient address (required)
+	Value               string `json:"value,omitempty"`       // Amount in wei (hex string, e.g., "0x0" for 0 wei)
+	Data                string `json:"data,omitempty"`        // Optional: contract call data (hex string)
+	GasLimit            string `json:"gas_limit,omitempty"`   // Optional: gas limit (hex string, auto-estimated if not provided)
+	GasPrice            string `json:"gas_price,omitempty"`   // Optional: gas price (hex string, fetched from network if not provided)
+	Nonce               string `json:"nonce,omitempty"`       // Optional: transaction nonce (hex string, fetched from network if not provided)
 }
 
 // GenericRPCRequest represents a generic JSON-RPC request

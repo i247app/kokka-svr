@@ -8,7 +8,7 @@ import (
 	"kokka.com/kokka/internal/applications/dtos"
 	"kokka.com/kokka/internal/applications/validators"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
-	"kokka.com/kokka/internal/shared/utils/crypto"
+	"kokka.com/kokka/internal/shared/utils"
 )
 
 // TokenService handles token business logic
@@ -53,7 +53,7 @@ func (s *TokenService) Mint(ctx context.Context, req *dtos.MintTokenRequest) (*d
 	}
 
 	// Decrypt private key
-	privateKey, err := crypto.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	privateKey, err := utils.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
 	}
@@ -106,7 +106,7 @@ func (s *TokenService) Burn(ctx context.Context, req *dtos.BurnTokenRequest) (*d
 	}
 
 	// Decrypt private key
-	privateKey, err := crypto.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	privateKey, err := utils.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
 	}
@@ -158,7 +158,7 @@ func (s *TokenService) Transfer(ctx context.Context, req *dtos.TransferTokenRequ
 	}
 
 	// Decrypt private key
-	privateKey, err := crypto.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	privateKey, err := utils.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
 	}

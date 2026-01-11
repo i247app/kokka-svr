@@ -8,25 +8,26 @@ import (
 	"kokka.com/kokka/internal/applications/dtos"
 	"kokka.com/kokka/internal/applications/validators"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
+	"kokka.com/kokka/internal/shared/utils"
 )
 
 // BlockchainService handles blockchain-related business logic
 type BlockchainService struct {
-	validator validators.IBlockchainValidator
-	client    *blockchain.Client
-	signer    *blockchain.TransactionSigner
+	validator     validators.IBlockchainValidator
+	client        *blockchain.Client
+	decryptionKey string
 }
 
 // NewBlockchainService creates a new blockchain service
 func NewBlockchainService(
 	validator validators.IBlockchainValidator,
 	client *blockchain.Client,
-	signer *blockchain.TransactionSigner,
+	decryptionKey string,
 ) *BlockchainService {
 	return &BlockchainService{
-		validator: validator,
-		client:    client,
-		signer:    signer,
+		validator:     validator,
+		client:        client,
+		decryptionKey: decryptionKey,
 	}
 }
 
@@ -167,7 +168,7 @@ func (s *BlockchainService) EstimateGas(ctx context.Context, req *dtos.EstimateG
 		return nil, err
 	}
 
-	gasEstimate, err := s.client.EstimateGas(ctx, req.From, req.To, req.Value)
+	gasEstimate, err := s.client.EstimateGas(ctx, req.From, req.To, req.Value, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to estimate gas: %w", err)
 	}
@@ -201,8 +202,16 @@ func (s *BlockchainService) SignAndSendTransaction(ctx context.Context, req *dto
 		return nil, err
 	}
 
-	if s.signer == nil {
-		return nil, fmt.Errorf("transaction signer is not configured (missing private key)")
+	// Decrypt private key
+	privateKey, err := utils.DecryptCrypto(req.EncryptedPrivateKey, s.decryptionKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decrypt private key: %w", err)
+	}
+
+	// Create transaction signer
+	signer, err := blockchain.NewTransactionSigner(privateKey, s.client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create transaction signer: %w", err)
 	}
 
 	// Convert DTO to signer request
@@ -216,14 +225,14 @@ func (s *BlockchainService) SignAndSendTransaction(ctx context.Context, req *dto
 	}
 
 	// Sign and send transaction
-	txHash, err := s.signer.SignAndSendTransaction(ctx, signerReq)
+	txHash, err := signer.SignAndSendTransaction(ctx, signerReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to sign and send transaction: %w", err)
 	}
 
 	return &dtos.SignAndSendTransactionResponse{
 		TxHash:      txHash,
-		FromAddress: s.signer.GetAddress(),
+		FromAddress: signer.GetAddress(),
 	}, nil
 }
 
