@@ -11,6 +11,9 @@ CLAUDE.md
 CHAIN.md
 VNDX_IMPLEMENTATION_SUMMARY.md
 SWAP_SERVICE.md
+PRESENTATION.md
+
+docs/
 
 # go workspace files
 go.work
