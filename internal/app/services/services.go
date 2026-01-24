@@ -14,6 +14,7 @@ type ServiceContainer struct {
 	BlockchainService diSvc.IBlockChainService
 	TokenService      diSvc.ITokenService
 	SwapService       diSvc.ISwapService
+	StakeService      diSvc.IStakeService
 }
 
 func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error) {
@@ -50,9 +51,21 @@ func SetupServiceContainer(res *resources.AppResource) (*ServiceContainer, error
 		return nil, fmt.Errorf("failed to initialize swap service: %w", err)
 	}
 
+	// Initialize Stake service (uses per-request signers, no global signer needed)
+	stakeValidator := validators.NewStakeValidator()
+	stakeService, err := services.NewStakeService(
+		stakeValidator,
+		blockchainClient,
+		res.Env.BlockchainConfig.DecryptionKey,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize stake service: %w", err)
+	}
+
 	return &ServiceContainer{
 		BlockchainService: blockchainService,
 		TokenService:      tokenService,
 		SwapService:       swapService,
+		StakeService:      stakeService,
 	}, nil
 }

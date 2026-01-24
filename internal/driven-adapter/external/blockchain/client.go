@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync/atomic"
+	"time"
 
 	"kokka.com/kokka/internal/shared/http_client"
 )
@@ -242,4 +243,38 @@ func (c *Client) GetTransactionCount(ctx context.Context, address string, block 
 	}
 
 	return result, nil
+}
+
+// GetTransactionReceipt returns the receipt of a transaction by hash
+func (c *Client) GetTransactionReceipt(ctx context.Context, txHash string) (*JSONRPCResponse, error) {
+	params := []interface{}{txHash}
+	resp, err := c.Call(ctx, "eth_getTransactionReceipt", params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get transaction receipt: %w", err)
+	}
+
+	return resp, nil
+}
+
+// WaitForTransaction waits for a transaction to be mined and confirmed
+// It will keep polling until the context is cancelled or transaction is confirmed
+func (c *Client) WaitForTransaction(ctx context.Context, txHash string) error {
+	for {
+		receipt, err := c.GetTransactionReceipt(ctx, txHash)
+		if err == nil && receipt != nil {
+			// Check if result is not null (transaction is mined)
+			result := receipt.Result
+			if result != nil {
+				return nil
+			}
+		}
+
+		// Wait 1 second before checking again
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("transaction confirmation cancelled or timed out: %w", ctx.Err())
+		case <-time.After(time.Second):
+			// Continue polling
+		}
+	}
 }

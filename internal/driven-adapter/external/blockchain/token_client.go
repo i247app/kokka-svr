@@ -108,6 +108,35 @@ func (v *TokenClient) Transfer(ctx context.Context, contractAddress string, to s
 	return txHash, nil
 }
 
+// Approve approves a spender to spend a specified amount of tokens
+// nonce is optional - if empty string, it will be fetched automatically
+func (v *TokenClient) Approve(ctx context.Context, contractAddress string, spender string, amount *big.Int, nonce string) (string, error) {
+	if v.signer == nil {
+		return "", fmt.Errorf("signer is required for approve operations")
+	}
+
+	// Encode the approve function call
+	data, err := v.abi.Pack("approve", common.HexToAddress(spender), amount)
+	if err != nil {
+		return "", fmt.Errorf("failed to encode approve call: %w", err)
+	}
+
+	// Prepare transaction request
+	txReq := &SignTransactionRequest{
+		To:    contractAddress,
+		Data:  hexutil.Encode(data),
+		Nonce: nonce,
+	}
+
+	// Sign and send the transaction
+	txHash, err := v.signer.SignAndSendTransaction(ctx, txReq)
+	if err != nil {
+		return "", fmt.Errorf("failed to send approve transaction: %w", err)
+	}
+
+	return txHash, nil
+}
+
 // BalanceOf returns the token balance of an address
 func (v *TokenClient) BalanceOf(ctx context.Context, contractAddress string, address string) (*big.Int, error) {
 	// Encode the balanceOf function call

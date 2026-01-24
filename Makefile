@@ -114,4 +114,16 @@ gen-swap-abi:
 	@abigen --abi=contracts/swap.abi --pkg=swap --type=Swap --out=internal/driven-adapter/external/blockchain/gen/swap/swap.go
 	@echo "✅ Go bindings generated successfully!"
 
+# generate Go bindings from stake contract ABI
+gen-stake-abi:
+	@echo "Generating Go bindings from Stake ABI..."
+	@mkdir -p internal/driven-adapter/external/blockchain/gen
+	@abigen --abi=contracts/stake.abi --pkg=stake --type=Stake --out=internal/driven-adapter/external/blockchain/gen/stake/stake.go
+	@echo "✅ Go bindings generated successfully!"
 
+# generate Go bindings from stake contract ABI for windows
+gen-stake-abi-windows:
+	@echo Generating Go bindings from Stake ABI...
+	@mkdir internal\driven-adapter\external\blockchain\gen\stake
+	@abigen --abi=contracts/stake.abi --pkg=stake --type=Stake --out=internal/driven-adapter/external/blockchain/gen/stake/stake.go
+	@echo Go bindings generated successfully!
