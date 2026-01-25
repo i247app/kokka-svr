@@ -40,7 +40,7 @@ func NewSwapClient(client *Client, signer *TransactionSigner) (*SwapClient, erro
 }
 
 // SwapAforB executes a swap from token A to token B
-func (s *SwapClient) SwapAforB(ctx context.Context, contractAddress string, amountIn *big.Int) (string, error) {
+func (s *SwapClient) SwapAforB(ctx context.Context, contractAddress string, amountIn *big.Int, nonce string) (string, error) {
 	if s.signer == nil {
 		return "", fmt.Errorf("signer is required for swap operations")
 	}
@@ -53,8 +53,9 @@ func (s *SwapClient) SwapAforB(ctx context.Context, contractAddress string, amou
 
 	// Prepare transaction request
 	txReq := &SignTransactionRequest{
-		To:   contractAddress,
-		Data: hexutil.Encode(data),
+		To:    contractAddress,
+		Data:  hexutil.Encode(data),
+		Nonce: nonce,
 	}
 
 	// Sign and send the transaction
@@ -67,7 +68,7 @@ func (s *SwapClient) SwapAforB(ctx context.Context, contractAddress string, amou
 }
 
 // SwapBforA executes a swap from token B to token A
-func (s *SwapClient) SwapBforA(ctx context.Context, contractAddress string, amountIn *big.Int) (string, error) {
+func (s *SwapClient) SwapBforA(ctx context.Context, contractAddress string, amountIn *big.Int, nonce string) (string, error) {
 	if s.signer == nil {
 		return "", fmt.Errorf("signer is required for swap operations")
 	}
@@ -80,8 +81,9 @@ func (s *SwapClient) SwapBforA(ctx context.Context, contractAddress string, amou
 
 	// Prepare transaction request
 	txReq := &SignTransactionRequest{
-		To:   contractAddress,
-		Data: hexutil.Encode(data),
+		To:    contractAddress,
+		Data:  hexutil.Encode(data),
+		Nonce: nonce,
 	}
 
 	// Sign and send the transaction

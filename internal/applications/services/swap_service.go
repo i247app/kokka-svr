@@ -64,13 +64,66 @@ func (s *SwapService) Swap(ctx context.Context, req *dtos.SwapTokenRequest) (*dt
 		return nil, fmt.Errorf("failed to create transaction signer: %w", err)
 	}
 
-	// Create swap client
+	// Get the current nonce for manual nonce management
+	address := signer.GetAddress()
+	nonceHex, err := s.client.GetTransactionCount(ctx, address, "pending")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get transaction count: %w", err)
+	}
+
+	// Calculate nonce N+1 for second transaction
+	nonceStr := nonceHex
+	if len(nonceStr) > 2 && nonceStr[:2] == "0x" {
+		nonceStr = nonceStr[2:]
+	}
+	firstNonce := new(big.Int)
+	firstNonce.SetString(nonceStr, 16)
+	secondNonce := new(big.Int).Add(firstNonce, big.NewInt(1))
+	secondNonceHex := "0x" + secondNonce.Text(16)
+
+	// Create swap client (read-only first to get token addresses)
 	swapClient, err := blockchain.NewSwapClient(s.client, signer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create swap client: %w", err)
 	}
 
-	// Execute swap transaction based on direction
+	// Get token addresses from swap contract
+	tokenA, err := swapClient.GetTokenA(ctx, req.ContractAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tokenA address: %w", err)
+	}
+
+	tokenB, err := swapClient.GetTokenB(ctx, req.ContractAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tokenB address: %w", err)
+	}
+
+	// Determine which token to approve based on direction
+	var tokenToApprove string
+	if req.Direction == "AtoB" {
+		tokenToApprove = tokenA // Swapping FROM tokenA
+	} else {
+		tokenToApprove = tokenB // Swapping FROM tokenB
+	}
+
+	// Approve the swap contract to spend tokens (uses nonce N)
+	tokenClient, err := blockchain.NewTokenClient(s.client, signer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token client: %w", err)
+	}
+
+	approveTxHash, err := tokenClient.Approve(ctx, tokenToApprove, req.ContractAddress, amountIn, nonceHex)
+	if err != nil {
+		return nil, fmt.Errorf("failed to approve tokens: %w", err)
+	}
+
+	// Wait for approve transaction to be mined
+	err = s.client.WaitForTransaction(ctx, approveTxHash)
+	if err != nil {
+		return nil, fmt.Errorf("approve transaction not confirmed (tx: %s): %w", approveTxHash, err)
+	}
+
+	// Execute swap transaction based on direction (uses nonce N+1)
 	var txHash string
 	var amountOut *big.Int
 
@@ -82,9 +135,9 @@ func (s *SwapService) Swap(ctx context.Context, req *dtos.SwapTokenRequest) (*dt
 		}
 
 		// Execute swap A for B
-		txHash, err = swapClient.SwapAforB(ctx, req.ContractAddress, amountIn)
+		txHash, err = swapClient.SwapAforB(ctx, req.ContractAddress, amountIn, secondNonceHex)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute AtoB swap: %w", err)
+			return nil, fmt.Errorf("failed to execute AtoB swap (approve tx: %s): %w", approveTxHash, err)
 		}
 	} else { // BtoA
 		// Get expected output amount before swapping
@@ -94,21 +147,10 @@ func (s *SwapService) Swap(ctx context.Context, req *dtos.SwapTokenRequest) (*dt
 		}
 
 		// Execute swap B for A
-		txHash, err = swapClient.SwapBforA(ctx, req.ContractAddress, amountIn)
+		txHash, err = swapClient.SwapBforA(ctx, req.ContractAddress, amountIn, secondNonceHex)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute BtoA swap: %w", err)
+			return nil, fmt.Errorf("failed to execute BtoA swap (approve tx: %s): %w", approveTxHash, err)
 		}
-	}
-
-	// Get token addresses
-	tokenA, err := swapClient.GetTokenA(ctx, req.ContractAddress)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get tokenA address: %w", err)
-	}
-
-	tokenB, err := swapClient.GetTokenB(ctx, req.ContractAddress)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get tokenB address: %w", err)
 	}
 
 	// Determine from/to tokens based on direction
