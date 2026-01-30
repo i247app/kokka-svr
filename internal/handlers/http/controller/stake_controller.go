@@ -69,6 +69,52 @@ func (c *StakeController) HandleGetPendingRewards(w http.ResponseWriter, r *http
 	response.WriteJson(w, ctx, result, nil, status.SUCCESS)
 }
 
+func (c *StakeController) HandleGetTotalStaked(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	if c.stakeService == nil {
+		response.WriteJson(w, r.Context(), nil, fmt.Errorf("stake service is not configured"), status.INTERNAL)
+		return
+	}
+
+	var req dtos.GetTotalStakedRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, ctx, nil, fmt.Errorf("invalid parameters"), status.FAIL)
+		return
+	}
+
+	result, err := c.stakeService.GetTotalStaked(ctx, &req)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.SUCCESS)
+}
+
+// HandleGetApyRates handles POST /stake/apy-rates
+func (c *StakeController) HandleGetApyRates(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	if c.stakeService == nil {
+		response.WriteJson(w, r.Context(), nil, fmt.Errorf("stake service is not configured"), status.INTERNAL)
+		return
+	}
+
+	var req dtos.GetApyRatesRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJson(w, ctx, nil, fmt.Errorf("invalid parameters"), status.FAIL)
+		return
+	}
+
+	result, err := c.stakeService.GetApyRates(ctx, &req)
+	if err != nil {
+		response.WriteJson(w, ctx, nil, err, status.INTERNAL)
+		return
+	}
+
+	response.WriteJson(w, ctx, result, nil, status.SUCCESS)
+}
+
 // HandleStakeToken handles POST /stake/stake-token
 func (c *StakeController) HandleStakeToken(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

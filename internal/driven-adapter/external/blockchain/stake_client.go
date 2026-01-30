@@ -88,6 +88,69 @@ func (s *StakeClient) PendingRewards(ctx context.Context, contractAddress string
 	return rewardsAmount, nil
 }
 
+func (s *StakeClient) TotalStaked(ctx context.Context, contractAddress string, tokenAddress string) (string, error) {
+	// Encode the totalStaked function call
+	data, err := s.abi.Pack("totalStaked", common.HexToAddress(tokenAddress))
+	if err != nil {
+		return "", fmt.Errorf("failed to encode totalStaked call: %w", err)
+	}
+
+	// Execute the call
+	result, err := s.client.CallContract(ctx, contractAddress, hexutil.Encode(data), "latest")
+	if err != nil {
+		return "", fmt.Errorf("failed to call totalStaked: %w", err)
+	}
+
+	// Parse the result
+	var totalStaked *big.Int
+
+	var totalStakedStr string
+
+	err = s.abi.UnpackIntoInterface(&totalStaked, "totalStaked", common.FromHex(result))
+	if err != nil {
+		return "", fmt.Errorf("failed to unpack totalStaked result: %w", err)
+	}
+	if totalStaked != nil {
+		totalStakedStr = totalStaked.String()
+	} else {
+		return "", fmt.Errorf("totalStaked result is nil")
+	}
+
+	return totalStakedStr, nil
+}
+
+func (s *StakeClient) ApyRates(ctx context.Context, contractAddress string, tokenAddress string) (string, error) {
+	// Encode the apyRates function call
+	data, err := s.abi.Pack("apyRates", common.HexToAddress(tokenAddress))
+	if err != nil {
+		return "", fmt.Errorf("failed to encode apyRates call: %v", err)
+	}
+
+	// Execute the call
+	result, err := s.client.CallContract(ctx, contractAddress, hexutil.Encode(data), "latest")
+	if err != nil {
+		return "", fmt.Errorf("failed to call apyRates: %v", err)
+	}
+
+	// Parse the result
+	var apyRates *big.Int
+
+	var apyRatesStr string
+
+	err = s.abi.UnpackIntoInterface(&apyRates, "apyRates", common.FromHex(result))
+	if err != nil {
+		return "", fmt.Errorf("failed to unpack apyRates result: %v", err)
+	}
+
+	if apyRates != nil {
+		apyRatesStr = apyRates.String()
+	} else {
+		return "", fmt.Errorf("apyRates result is nil")
+	}
+
+	return apyRatesStr, nil
+}
+
 // Stake stakes a specified amount of tokens
 // nonce is optional - if empty string, it will be fetched automatically
 // Returns transaction hash
@@ -96,8 +159,7 @@ func (s *StakeClient) Stake(ctx context.Context, contractAddress string, tokenAd
 		return "", fmt.Errorf("signer is required for stake operations")
 	}
 
-	tokenAddr := common.HexToAddress(tokenAddress)
-	data, err := s.abi.Pack("stake", tokenAddr, amount)
+	data, err := s.abi.Pack("stake", common.HexToAddress(tokenAddress), amount)
 	if err != nil {
 		return "", fmt.Errorf("failed to encode stake call: %w", err)
 	}
@@ -118,12 +180,12 @@ func (s *StakeClient) Stake(ctx context.Context, contractAddress string, tokenAd
 
 // Withdraw withdraws a specified amount
 // Returns transaction hash
-func (s *StakeClient) Withdraw(ctx context.Context, contractAddress string, amount *big.Int) (string, error) {
+func (s *StakeClient) Withdraw(ctx context.Context, contractAddress string, tokenAddress string, amount *big.Int) (string, error) {
 	if s.signer == nil {
 		return "", fmt.Errorf("signer is required for withdraw operations")
 	}
 
-	data, err := s.abi.Pack("withdraw", amount)
+	data, err := s.abi.Pack("withdraw", common.HexToAddress(tokenAddress), amount)
 	if err != nil {
 		return "", fmt.Errorf("failed to encode withdraw call: %w", err)
 	}
@@ -143,12 +205,12 @@ func (s *StakeClient) Withdraw(ctx context.Context, contractAddress string, amou
 
 // ClaimRewards claims pending rewards
 // Returns transaction hash
-func (s *StakeClient) ClaimRewards(ctx context.Context, contractAddress string) (string, error) {
+func (s *StakeClient) ClaimRewards(ctx context.Context, contractAddress string, tokenAddress string) (string, error) {
 	if s.signer == nil {
 		return "", fmt.Errorf("signer is required for claim rewards operations")
 	}
 
-	data, err := s.abi.Pack("claimRewards")
+	data, err := s.abi.Pack("claimRewards", common.HexToAddress(tokenAddress))
 	if err != nil {
 		return "", fmt.Errorf("failed to encode claimRewards call: %w", err)
 	}

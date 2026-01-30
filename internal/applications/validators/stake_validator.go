@@ -10,6 +10,8 @@ type IStakeValidator interface {
 	ValidateStakeTokenRequest(req *dtos.StakeTokenRequest) error
 	ValidateGetUserStakeRequest(req *dtos.GetUserStakeRequest) error
 	ValidateGetPendingRewardsRequest(req *dtos.GetPendingRewardsRequest) error
+	ValidateGetTotalStakedRequest(req *dtos.GetTotalStakedRequest) error
+	ValidateGetApyRatesRequest(req *dtos.GetApyRatesRequest) error
 	ValidateWithdrawTokenRequest(req *dtos.WithdrawTokenRequest) error
 	ValidateClaimRewardsRequest(req *dtos.ClaimRewardsRequest) error
 	ValidateClaimAllRewardsRequest(req *dtos.ClaimAllRewardsRequest) error
@@ -90,6 +92,55 @@ func (v *stakeValidator) ValidateGetPendingRewardsRequest(req *dtos.GetPendingRe
 
 	return nil
 }
+
+func (v *stakeValidator) ValidateGetTotalStakedRequest(req *dtos.GetTotalStakedRequest) error {
+	if req == nil {
+		return errors.New("request cannot be nil")
+	}
+
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
+
+	if req.TokenAddress == "" {
+		return errors.New("token_address is required")
+	}
+
+	if !isValidEthereumAddress(req.ContractAddress) {
+		return errors.New("invalid contract_address format")
+	}
+
+	if !isValidEthereumAddress(req.TokenAddress) {
+		return errors.New("invalid token_address format")
+	}
+
+	return nil
+}
+
+func (v *stakeValidator) ValidateGetApyRatesRequest(req *dtos.GetApyRatesRequest) error {
+	if req == nil {
+		return errors.New("request cannot be nil")
+	}
+
+	if req.ContractAddress == "" {
+		return errors.New("contract_address is required")
+	}
+
+	if req.TokenAddress == "" {
+		return errors.New("token_address is required")
+	}
+
+	if !isValidEthereumAddress(req.ContractAddress) {
+		return errors.New("invalid contract_address format")
+	}
+
+	if !isValidEthereumAddress(req.TokenAddress) {
+		return errors.New("invalid token_address format")
+	}
+
+	return nil
+}
+
 func (v *stakeValidator) ValidateWithdrawTokenRequest(req *dtos.WithdrawTokenRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")
@@ -113,6 +164,7 @@ func (v *stakeValidator) ValidateWithdrawTokenRequest(req *dtos.WithdrawTokenReq
 
 	return nil
 }
+
 func (v *stakeValidator) ValidateClaimRewardsRequest(req *dtos.ClaimRewardsRequest) error {
 	if req == nil {
 		return errors.New("request cannot be nil")

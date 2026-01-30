@@ -76,6 +76,50 @@ func (s *StakeService) GetPendingRewards(ctx context.Context, req *dtos.GetPendi
 	}, nil
 }
 
+// GetTotalStaked retrieves the total staked amount for a contract and token
+func (s *StakeService) GetTotalStaked(ctx context.Context, req *dtos.GetTotalStakedRequest) (*dtos.GetTotalStakedResponse, error) {
+
+	// Validate request
+	if err := s.validator.ValidateGetTotalStakedRequest(req); err != nil {
+		return nil, err
+	}
+
+	totalStaked, err := s.readOnlyStakeClient.TotalStaked(ctx, req.ContractAddress, req.TokenAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.GetTotalStakedResponse{
+		ContractAddress: req.ContractAddress,
+		TotalStaked:     totalStaked,
+	}, nil
+}
+
+// GetApyRates retrieves the APY rates for a contract and token
+func (s *StakeService) GetApyRates(ctx context.Context, req *dtos.GetApyRatesRequest) (*dtos.GetApyRatesResponse, error) {
+
+	// Validate request
+	if err := s.validator.ValidateGetApyRatesRequest(req); err != nil {
+		return nil, err
+	}
+
+	apyRates, err := s.readOnlyStakeClient.ApyRates(ctx, req.ContractAddress, req.TokenAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert APY string to float64
+	apyBigInt := new(big.Int)
+	apyBigInt.SetString(apyRates, 10)
+	apyFloat := new(big.Float).SetInt(apyBigInt)
+	apyFloat64, _ := apyFloat.Float64()
+
+	return &dtos.GetApyRatesResponse{
+		ContractAddress: req.ContractAddress,
+		ApyRates:        apyFloat64,
+	}, nil
+}
+
 // StakeToken stakes tokens for the user
 func (s *StakeService) StakeToken(ctx context.Context, req *dtos.StakeTokenRequest) (*dtos.StakeTokenResponse, error) {
 	// Validate request
@@ -118,36 +162,44 @@ func (s *StakeService) StakeToken(ctx context.Context, req *dtos.StakeTokenReque
 	nextNonce := new(big.Int).Add(nonceBig, big.NewInt(1))
 	nextNonceHex := "0x" + nextNonce.Text(16)
 
-	// Approve the staking contract to spend tokens (uses nonce N)
+	// Create clients
 	tokenClient, err := blockchain.NewTokenClient(s.client, signer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create token client: %w", err)
 	}
 
-	approveTxHash, err := tokenClient.Approve(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex)
-	if err != nil {
-		return nil, fmt.Errorf("failed to approve tokens: %w", err)
-	}
-
-	// Wait for approve transaction to be mined before proceeding
-	err = s.client.WaitForTransaction(ctx, approveTxHash)
-	if err != nil {
-		return nil, fmt.Errorf("approve transaction not confirmed (tx: %s): %w", approveTxHash, err)
-	}
-
-	// Execute the stake transaction (uses nonce N+1)
 	stakeClient, err := blockchain.NewStakeClient(s.client, signer)
 	if err != nil {
 		return nil, err
 	}
 
-	txHash, err := stakeClient.Stake(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex)
+	// Send approve transaction (nonce N)
+	approveTxHash, err := tokenClient.Approve(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex)
 	if err != nil {
-		return nil, fmt.Errorf("failed to stake tokens (approve tx: %s): %w", approveTxHash, err)
+		return nil, fmt.Errorf("failed to send approve transaction: %w", err)
+	}
+
+	// Wait for approve transaction to be confirmed
+	err = s.client.WaitForTransaction(ctx, approveTxHash)
+	if err != nil {
+		return nil, fmt.Errorf("approve transaction not confirmed (approve tx: %s): %w", approveTxHash, err)
+	}
+
+	// Send stake transaction (nonce N+1) after approve is confirmed
+	stakeTxHash, err := stakeClient.Stake(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send stake transaction (approve tx: %s): %w", approveTxHash, err)
+	}
+
+	// Wait for stake transaction receipt
+	err = s.client.WaitForTransaction(ctx, stakeTxHash)
+	if err != nil {
+		return nil, fmt.Errorf("stake transaction not confirmed (approve tx: %s, stake tx: %s): %w", approveTxHash, stakeTxHash, err)
 	}
 
 	return &dtos.StakeTokenResponse{
-		TxHash:          txHash,
+		TxHash:          stakeTxHash,
+		ApproveTxHash:   approveTxHash,
 		ContractAddress: req.ContractAddress,
 	}, nil
 }
@@ -183,12 +235,13 @@ func (s *StakeService) WithdrawToken(ctx context.Context, req *dtos.WithdrawToke
 		return nil, err
 	}
 
-	txHash, err := stakeClient.Withdraw(ctx, req.ContractAddress, amount)
+	txHash, err := stakeClient.Withdraw(ctx, req.ContractAddress, req.TokenAddress, amount)
 	if err != nil {
 		return nil, err
 	}
 
 	return &dtos.WithdrawTokenResponse{
+		Amount:          req.Amount,
 		TxHash:          txHash,
 		ContractAddress: req.ContractAddress,
 	}, nil
@@ -219,7 +272,7 @@ func (s *StakeService) ClaimRewards(ctx context.Context, req *dtos.ClaimRewardsR
 		return nil, err
 	}
 
-	txHash, err := stakeClient.ClaimRewards(ctx, req.ContractAddress)
+	txHash, err := stakeClient.ClaimRewards(ctx, req.ContractAddress, req.TokenAddress)
 	if err != nil {
 		return nil, err
 	}

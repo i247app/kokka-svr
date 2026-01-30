@@ -9,6 +9,8 @@ import (
 type IStakeService interface {
 	GetUserStake(ctx context.Context, req *dtos.GetUserStakeRequest) (*dtos.GetUserStakeResponse, error)
 	GetPendingRewards(ctx context.Context, req *dtos.GetPendingRewardsRequest) (*dtos.GetPendingRewardsResponse, error)
+	GetTotalStaked(ctx context.Context, req *dtos.GetTotalStakedRequest) (*dtos.GetTotalStakedResponse, error)
+	GetApyRates(ctx context.Context, req *dtos.GetApyRatesRequest) (*dtos.GetApyRatesResponse, error)
 	StakeToken(ctx context.Context, req *dtos.StakeTokenRequest) (*dtos.StakeTokenResponse, error)
 	WithdrawToken(ctx context.Context, req *dtos.WithdrawTokenRequest) (*dtos.WithdrawTokenResponse, error)
 	ClaimRewards(ctx context.Context, req *dtos.ClaimRewardsRequest) (*dtos.ClaimRewardsResponse, error)

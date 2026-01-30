@@ -168,7 +168,7 @@ func (s *BlockchainService) EstimateGas(ctx context.Context, req *dtos.EstimateG
 		return nil, err
 	}
 
-	gasEstimate, err := s.client.EstimateGas(ctx, req.From, req.To, req.Value, "")
+	gasEstimate, err := s.client.EstimateGas(ctx, req.From, req.To, req.Value, req.Data, req.Nonce)
 	if err != nil {
 		return nil, fmt.Errorf("failed to estimate gas: %w", err)
 	}

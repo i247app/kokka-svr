@@ -29,6 +29,8 @@ type EstimateGasRequest struct {
 	From  string `json:"from"`
 	To    string `json:"to"`
 	Value string `json:"value,omitempty"`
+	Data  string `json:"data,omitempty"`
+	Nonce string `json:"nonce,omitempty"`
 }
 
 // SendRawTransactionRequest represents a request to broadcast a signed transaction

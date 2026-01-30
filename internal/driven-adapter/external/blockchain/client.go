@@ -182,7 +182,7 @@ func (c *Client) CallContract(ctx context.Context, to string, data string, block
 }
 
 // EstimateGasWithData estimates gas for a transaction with contract data
-func (c *Client) EstimateGas(ctx context.Context, from, to, value, data string) (string, error) {
+func (c *Client) EstimateGas(ctx context.Context, from, to, value, data string, nonce string) (string, error) {
 	txObject := map[string]interface{}{
 		"from": from,
 		"to":   to,
@@ -196,6 +196,10 @@ func (c *Client) EstimateGas(ctx context.Context, from, to, value, data string) 
 	// Only add data if it's not empty
 	if data != "" && data != "0x" {
 		txObject["data"] = data
+	}
+
+	if nonce != "" && nonce != "0x" {
+		txObject["nonce"] = nonce
 	}
 
 	params := []interface{}{txObject}

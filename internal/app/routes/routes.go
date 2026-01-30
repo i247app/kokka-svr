@@ -59,8 +59,11 @@ func SetUpHttpRoutes(server *gex.Server, res *resources.AppResource, services *s
 	// POST endpoints
 	server.AddRoute("POST /stake/user-stake", stake.HandleGetUserStake)
 	server.AddRoute("POST /stake/pending-rewards", stake.HandleGetPendingRewards)
+	server.AddRoute("POST /stake/total-staked", stake.HandleGetTotalStaked)
+	server.AddRoute("POST /stake/apy-rates", stake.HandleGetApyRates)
+
 	server.AddRoute("POST /stake/stake-token", stake.HandleStakeToken)
-	server.AddRoute("POST /stake/withdraw-token", stake.HandleWithdrawToken)
+	server.AddRoute("POST /stake/withdraw", stake.HandleWithdrawToken)
 	server.AddRoute("POST /stake/claim-rewards", stake.HandleClaimRewards)
 	server.AddRoute("POST /stake/claim-all-rewards", stake.HandleClaimAllRewards)
 }
