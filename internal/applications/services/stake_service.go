@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"kokka.com/kokka/internal/applications/dtos"
 	"kokka.com/kokka/internal/applications/validators"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
@@ -173,25 +174,35 @@ func (s *StakeService) StakeToken(ctx context.Context, req *dtos.StakeTokenReque
 		return nil, err
 	}
 
-	// Send approve transaction (nonce N)
-	approveTxHash, err := tokenClient.Approve(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex)
+	// Get addresses for gas estimation
+	ownerAddr := signer.GetAddressAsCommon()
+	spenderAddr := common.HexToAddress(req.ContractAddress)
+
+	// Step 1: Estimate approve gas (doesn't depend on anything)
+	approveGasLimit, err := tokenClient.EstimateApproveGas(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex, ownerAddr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to estimate approve gas: %w", err)
+	}
+
+	// Step 2: Estimate stake gas with state override (tries multiple storage slots)
+	stakeGasLimit, err := stakeClient.EstimateStakeGasWithAllowanceOverride(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex, ownerAddr, spenderAddr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to estimate stake gas: %w", err)
+	}
+
+	// Step 3: Send approve transaction (nonce N) with estimated gas
+	approveTxHash, err := tokenClient.ApproveWithGasLimit(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex, approveGasLimit)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send approve transaction: %w", err)
 	}
 
-	// Wait for approve transaction to be confirmed
-	err = s.client.WaitForTransaction(ctx, approveTxHash)
-	if err != nil {
-		return nil, fmt.Errorf("approve transaction not confirmed (approve tx: %s): %w", approveTxHash, err)
-	}
-
-	// Send stake transaction (nonce N+1) after approve is confirmed
-	stakeTxHash, err := stakeClient.Stake(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex)
+	// Step 4: Send stake transaction (nonce N+1) immediately with estimated gas
+	stakeTxHash, err := stakeClient.StakeWithGasLimit(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex, stakeGasLimit)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send stake transaction (approve tx: %s): %w", approveTxHash, err)
 	}
 
-	// Wait for stake transaction receipt
+	// Wait for stake transaction receipt (approve will confirm first due to nonce order)
 	err = s.client.WaitForTransaction(ctx, stakeTxHash)
 	if err != nil {
 		return nil, fmt.Errorf("stake transaction not confirmed (approve tx: %s, stake tx: %s): %w", approveTxHash, stakeTxHash, err)

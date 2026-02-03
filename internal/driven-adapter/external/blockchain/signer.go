@@ -46,6 +46,16 @@ func (s *TransactionSigner) GetAddress() string {
 	return crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
 }
 
+func (s *TransactionSigner) GetAddressAsCommon() common.Address {
+	publicKey := s.privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return common.Address{}
+	}
+
+	return crypto.PubkeyToAddress(*publicKeyECDSA)
+}
+
 // SignAndSendTransaction signs a transaction and sends it to the blockchain
 func (s *TransactionSigner) SignAndSendTransaction(ctx context.Context, req *SignTransactionRequest) (string, error) {
 	// Get chain ID

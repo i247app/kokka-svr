@@ -6,6 +6,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"kokka.com/kokka/internal/shared/http_client"
 )
 
@@ -281,4 +283,71 @@ func (c *Client) WaitForTransaction(ctx context.Context, txHash string) error {
 			// Continue polling
 		}
 	}
+}
+
+func (c *Client) GetStorageAt(ctx context.Context, address string, position string, block string) (string, error) {
+	params := []interface{}{address, position, block}
+
+	resp, err := c.Call(ctx, "getStorageAt", params)
+	if err != nil {
+		return "", fmt.Errorf("failed to get storage at position: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse storage at position: %w", err)
+	}
+
+	return result, nil
+}
+
+// CalculateAllowanceSlot calculates the storage slot for ERC20 allowance mapping
+// ERC20 standard: mapping(address => mapping(address => uint256)) allowances
+// Solidity: allowances[owner][spender]
+// Storage slot = keccak256(spender + keccak256(owner + allowanceSlot))
+func (c *Client) CalculateAllowanceSlot(ctx context.Context, owner common.Address, spender common.Address, allowanceSlot uint64) common.Hash {
+	// keccak256(owner + allowanceSlot)
+	ownerPadded := common.LeftPadBytes(owner.Bytes(), 32)
+	slotBytes := make([]byte, 32)
+	slotBytes[31] = byte(allowanceSlot)
+	innerHash := crypto.Keccak256Hash(append(ownerPadded, slotBytes...))
+
+	// keccak256(spender + innerHash)
+	spenderPadded := common.LeftPadBytes(spender.Bytes(), 32)
+	finalHash := crypto.Keccak256Hash(append(spenderPadded, innerHash.Bytes()...))
+
+	return finalHash
+}
+
+func (c *Client) EstimateGasWithStateOverride(ctx context.Context, from string, to string, value string, data string, nonce string, stateOveride map[string]interface{}) (string, error) {
+	txObject := map[string]interface{}{
+		"from": from,
+		"to":   to,
+	}
+
+	if value != "" && value != "0x0" && value != "0x" {
+		txObject["value"] = value
+	}
+
+	if data != "" && data != "0x" {
+		txObject["data"] = data
+	}
+
+	if nonce != "" && nonce != "0x" {
+		txObject["nonce"] = nonce
+	}
+
+	params := []interface{}{txObject, "latest", stateOveride}
+
+	resp, err := c.Call(ctx, "eth_estimateGas", params)
+	if err != nil {
+		return "", fmt.Errorf("failed to estimate gas with state override: %w", err)
+	}
+
+	result, err := resp.GetResultAsString()
+	if err != nil {
+		return "", fmt.Errorf("failed to parse gas estimate with state override: %w", err)
+	}
+
+	return result, nil
 }
