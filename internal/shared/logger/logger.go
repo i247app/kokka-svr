@@ -18,6 +18,7 @@ type loggerKeyType string
 type tokenKeyType string
 type useridKeyType string
 type routeKeyType string
+type ipKeyType string
 type bgColorKeyType string
 
 const (
@@ -25,6 +26,7 @@ const (
 	tokenKey   = tokenKeyType("token")
 	useridKey  = useridKeyType("userid")
 	routeKey   = routeKeyType("route")
+	ipKey      = ipKeyType("ip")
 	bgColorKey = bgColorKeyType("bgcolor")
 )
 
@@ -96,10 +98,10 @@ func NewRequestScopedLogger(r *http.Request, outFilePath string) *logger {
 	slogger := slog.New(handler)
 
 	// Extract session info from request
-	token, userid, route := extractSessionInfoFromRequest(r)
+	token, userid, route, ip := extractSessionInfoFromRequest(r)
 
 	// Create context with session info
-	ctx := withSessionInfo(r.Context(), token, userid, route)
+	ctx := withSessionInfo(r.Context(), token, userid, route, ip)
 
 	return &logger{
 		slogger:         slogger,
