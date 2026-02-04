@@ -178,39 +178,48 @@ func (s *StakeService) StakeToken(ctx context.Context, req *dtos.StakeTokenReque
 	ownerAddr := signer.GetAddressAsCommon()
 	spenderAddr := common.HexToAddress(req.ContractAddress)
 
-	// Step 1: Estimate approve gas (doesn't depend on anything)
+	// Estimate approve gas (doesn't depend on anything)
 	approveGasLimit, err := tokenClient.EstimateApproveGas(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex, ownerAddr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to estimate approve gas: %w", err)
 	}
 
-	// Step 2: Estimate stake gas with state override (tries multiple storage slots)
+	// Estimate stake gas with state override (tries multiple storage slots)
 	stakeGasLimit, err := stakeClient.EstimateStakeGasWithAllowanceOverride(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex, ownerAddr, spenderAddr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to estimate stake gas: %w", err)
 	}
 
-	// Step 3: Send approve transaction (nonce N) with estimated gas
-	approveTxHash, err := tokenClient.ApproveWithGasLimit(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex, approveGasLimit)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send approve transaction: %w", err)
+	// Send both transactions in parallel with pre-estimated gas
+	type txResult struct {
+		txHash string
+		err    error
 	}
 
-	// Step 4: Send stake transaction (nonce N+1) immediately with estimated gas
-	stakeTxHash, err := stakeClient.StakeWithGasLimit(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex, stakeGasLimit)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send stake transaction (approve tx: %s): %w", approveTxHash, err)
+	approveChan := make(chan txResult, 1)
+	stakeChan := make(chan txResult, 1)
+
+	// Goroutine 1: Send approve (nonce N)
+	go func() {
+		txHash, err := tokenClient.Approve(ctx, req.TokenAddress, req.ContractAddress, amount, nonceHex, approveGasLimit)
+		approveChan <- txResult{txHash: txHash, err: err}
+	}()
+
+	// Goroutine 2: Send stake (nonce N+1)
+	go func() {
+		txHash, err := stakeClient.Stake(ctx, req.ContractAddress, req.TokenAddress, amount, nextNonceHex, stakeGasLimit)
+		stakeChan <- txResult{txHash: txHash, err: err}
+	}()
+
+	stakeResult := <-stakeChan
+	if stakeResult.err != nil {
+		return nil, fmt.Errorf("failed to send stake transaction: %w", stakeResult.err)
 	}
 
-	// Wait for stake transaction receipt (approve will confirm first due to nonce order)
-	err = s.client.WaitForTransaction(ctx, stakeTxHash)
-	if err != nil {
-		return nil, fmt.Errorf("stake transaction not confirmed (approve tx: %s, stake tx: %s): %w", approveTxHash, stakeTxHash, err)
-	}
-
+	// Return immediately with both transaction hashes
+	// Blockchain will execute in order (approve first, then stake)
 	return &dtos.StakeTokenResponse{
-		TxHash:          stakeTxHash,
-		ApproveTxHash:   approveTxHash,
+		TxHash:          stakeResult.txHash,
 		ContractAddress: req.ContractAddress,
 	}, nil
 }

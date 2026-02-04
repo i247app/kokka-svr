@@ -151,10 +151,8 @@ func (s *StakeClient) ApyRates(ctx context.Context, contractAddress string, toke
 	return apyRatesStr, nil
 }
 
-// Stake stakes a specified amount of tokens
-// nonce is optional - if empty string, it will be fetched automatically
-// Returns transaction hash
-func (s *StakeClient) Stake(ctx context.Context, contractAddress string, tokenAddress string, amount *big.Int, nonce string) (string, error) {
+// Stake stakes tokens with a specified gas limit
+func (s *StakeClient) Stake(ctx context.Context, contractAddress, tokenAddress string, amount *big.Int, nonce, gasLimit string) (string, error) {
 	if s.signer == nil {
 		return "", fmt.Errorf("signer is required for stake operations")
 	}
@@ -165,9 +163,10 @@ func (s *StakeClient) Stake(ctx context.Context, contractAddress string, tokenAd
 	}
 
 	txReq := &SignTransactionRequest{
-		To:    contractAddress,
-		Data:  hexutil.Encode(data),
-		Nonce: nonce,
+		To:       contractAddress,
+		Data:     hexutil.Encode(data),
+		Nonce:    nonce,
+		GasLimit: gasLimit,
 	}
 
 	txHash, err := s.signer.SignAndSendTransaction(ctx, txReq)
@@ -347,30 +346,4 @@ func (s *StakeClient) EstimateStakeGasWithAllowanceOverride(ctx context.Context,
 
 	// All slots failed
 	return "", fmt.Errorf("failed to estimate gas with all allowance overrides: %w", lastErr)
-}
-
-// StakeWithGasLimit stakes with pre-estimated gas limit
-func (s *StakeClient) StakeWithGasLimit(ctx context.Context, contractAddress, tokenAddress string, amount *big.Int, nonce, gasLimit string) (string, error) {
-	if s.signer == nil {
-		return "", fmt.Errorf("signer is required for stake operations")
-	}
-
-	data, err := s.abi.Pack("stake", common.HexToAddress(tokenAddress), amount)
-	if err != nil {
-		return "", fmt.Errorf("failed to encode stake call: %w", err)
-	}
-
-	txReq := &SignTransactionRequest{
-		To:       contractAddress,
-		Data:     hexutil.Encode(data),
-		Nonce:    nonce,
-		GasLimit: gasLimit,
-	}
-
-	txHash, err := s.signer.SignAndSendTransaction(ctx, txReq)
-	if err != nil {
-		return "", fmt.Errorf("failed to send stake transaction: %w", err)
-	}
-
-	return txHash, nil
 }

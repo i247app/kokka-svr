@@ -241,3 +241,174 @@ func (s *SwapClient) GetTokenB(ctx context.Context, contractAddress string) (str
 
 	return tokenAddress.Hex(), nil
 }
+
+// EstimateSwapAforBGas estimates the gas required for a swapAforB transaction
+func (s *SwapClient) EstimateSwapAforBGas(ctx context.Context, contractAddress string, amountIn *big.Int, nonce string, owner common.Address) (string, error) {
+	// Encode the swapAforB function call
+	data, err := s.abi.Pack("swapAforB", amountIn)
+	if err != nil {
+		return "", fmt.Errorf("failed to encode swapAforB call: %w", err)
+	}
+
+	// Estimate gas
+	gasLimit, err := s.client.EstimateGas(
+		ctx,
+		owner.Hex(),
+		contractAddress,
+		"",
+		hexutil.Encode(data),
+		nonce,
+	)
+	if err != nil {
+		return "", fmt.Errorf("failed to estimate swapAforB gas: %w", err)
+	}
+
+	return gasLimit, nil
+}
+
+func (s *SwapClient) EstimateSwapBforAGas(ctx context.Context, contractAddress string, amountIn *big.Int, nonce string, owner common.Address) (string, error) {
+	// Encode the swapBforA function call
+	data, err := s.abi.Pack("swapBforA", amountIn)
+	if err != nil {
+		return "", fmt.Errorf("failed to encode swapBforA call: %w", err)
+	}
+
+	// Estimate gas
+	gasLimit, err := s.client.EstimateGas(
+		ctx,
+		owner.Hex(),
+		contractAddress,
+		"",
+		hexutil.Encode(data),
+		nonce,
+	)
+	if err != nil {
+		return "", fmt.Errorf("failed to estimate swapBforA gas: %w", err)
+	}
+
+	return gasLimit, nil
+}
+
+func (s *SwapClient) EstimateSwapAforBGasWithAllowanceOverride(ctx context.Context, contractAddress string, tokenAAddress string, amountIn *big.Int, nonce string, owner common.Address, spender common.Address) (string, error) {
+	// Encode the swapAforB function call
+	data, err := s.abi.Pack("swapAforB", amountIn)
+	if err != nil {
+		return "", fmt.Errorf("failed to encode swapAforB call: %w", err)
+	}
+
+	slotCandidates := []uint64{2, 1, 3, 0, 4, 5}
+
+	var lastErr error
+	for _, slot := range slotCandidates {
+		// Calculate allowance storage slot for allowance mapping
+		allowanceSlot := s.client.CalculateAllowanceSlot(ctx, owner, spender, slot)
+
+		// Convert amount to hex
+		amountHex := common.BytesToHash(common.LeftPadBytes(amountIn.Bytes(), 32)).Hex()
+
+		stateOverride := map[string]interface{}{
+			tokenAAddress: map[string]interface{}{
+				"stateDiff": map[string]interface{}{
+					allowanceSlot.Hex(): amountHex,
+				},
+			},
+		}
+
+		// Estimate gas with state override
+		gasLimit, err := s.client.EstimateGasWithStateOverride(ctx, owner.Hex(), contractAddress, "", hexutil.Encode(data), nonce, stateOverride)
+		if err == nil {
+			return gasLimit, nil
+		}
+
+		lastErr = err
+	}
+
+	return "", fmt.Errorf("failed to estimate swapAforB gas with allowance override: %w", lastErr)
+}
+
+func (s *SwapClient) EstimateSwapBforAGasWithAllowanceOverride(ctx context.Context, contractAddress string, tokenBAddress string, amountIn *big.Int, nonce string, owner common.Address, spender common.Address) (string, error) {
+	// Encode the swapBforA function call
+	data, err := s.abi.Pack("swapBforA", amountIn)
+	if err != nil {
+		return "", fmt.Errorf("failed to encode swapBforA call: %w", err)
+	}
+
+	slotCandidates := []uint64{2, 1, 3, 0, 4, 5}
+
+	var lastErr error
+	for _, slot := range slotCandidates {
+		// Calculate allowance storage slot for allowance mapping
+		allowanceSlot := s.client.CalculateAllowanceSlot(ctx, owner, spender, slot)
+
+		// Convert amount to hex
+		amountHex := common.BytesToHash(common.LeftPadBytes(amountIn.Bytes(), 32)).Hex()
+
+		stateOverride := map[string]interface{}{
+			tokenBAddress: map[string]interface{}{
+				"stateDiff": map[string]interface{}{
+					allowanceSlot.Hex(): amountHex,
+				},
+			},
+		}
+
+		// Estimate gas with state override
+		gasLimit, err := s.client.EstimateGasWithStateOverride(ctx, owner.Hex(), contractAddress, "", hexutil.Encode(data), nonce, stateOverride)
+		if err == nil {
+			return gasLimit, nil
+		}
+
+		lastErr = err
+	}
+
+	return "", fmt.Errorf("failed to estimate swapBforA gas with allowance override: %w", lastErr)
+}
+
+func (s *SwapClient) SwapAforBWithGasLimit(ctx context.Context, contractAddress string, tokenAAddress string, amountIn *big.Int, nonce string, gasLimit string) (string, error) {
+	if s.signer == nil {
+		return "", fmt.Errorf("signer is required for swap operations")
+	}
+
+	data, err := s.abi.Pack("swapAforB", amountIn)
+	if err != nil {
+		return "", fmt.Errorf("failed to encode swapAforB call: %w", err)
+	}
+
+	txReq := &SignTransactionRequest{
+		To:       contractAddress,
+		Data:     hexutil.Encode(data),
+		Nonce:    nonce,
+		GasLimit: gasLimit,
+	}
+
+	txHash, err := s.signer.SignAndSendTransaction(ctx, txReq)
+	if err != nil {
+		return "", fmt.Errorf("failed to send swapAforB transaction: %w", err)
+	}
+
+	return txHash, nil
+}
+
+func (s *SwapClient) SwapBforAWithGasLimit(ctx context.Context, contractAddress string, tokenBAddress string, amountIn *big.Int, nonce string, gasLimit string) (string, error) {
+	if s.signer == nil {
+		return "", fmt.Errorf("signer is required for swap operations")
+	}
+
+	data, err := s.abi.Pack("swapBforA", amountIn)
+	if err != nil {
+		return "", fmt.Errorf("failed to encode swapBforA call: %w", err)
+	}
+
+	txReq := &SignTransactionRequest{
+		To:       contractAddress,
+		Data:     hexutil.Encode(data),
+		Nonce:    nonce,
+		GasLimit: gasLimit,
+	}
+
+	txHash, err := s.signer.SignAndSendTransaction(ctx, txReq)
+	if err != nil {
+		return "", fmt.Errorf("failed to send swapBforA transaction: %w", err)
+	}
+
+	return txHash, nil
+}

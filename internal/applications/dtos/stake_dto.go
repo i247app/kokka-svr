@@ -59,7 +59,6 @@ type StakeTokenRequest struct {
 // StakeTokenResponse represents the response from staking tokens
 type StakeTokenResponse struct {
 	TxHash          string `json:"tx_hash"`
-	ApproveTxHash   string `json:"approve_tx_hash"`
 	ContractAddress string `json:"contract_address"`
 }
 

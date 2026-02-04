@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"kokka.com/kokka/internal/applications/dtos"
 	"kokka.com/kokka/internal/applications/validators"
 	"kokka.com/kokka/internal/driven-adapter/external/blockchain"
@@ -106,51 +107,82 @@ func (s *SwapService) Swap(ctx context.Context, req *dtos.SwapTokenRequest) (*dt
 		tokenToApprove = tokenB // Swapping FROM tokenB
 	}
 
-	// Approve the swap contract to spend tokens (uses nonce N)
+	// Create token client
 	tokenClient, err := blockchain.NewTokenClient(s.client, signer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create token client: %w", err)
 	}
 
-	approveTxHash, err := tokenClient.Approve(ctx, tokenToApprove, req.ContractAddress, amountIn, nonceHex)
+	// Get addresses for gas estimation
+	ownerAddr := signer.GetAddressAsCommon()
+	spenderAddr := common.HexToAddress(req.ContractAddress)
+
+	// Estimate approve gas
+	approveGasLimit, err := tokenClient.EstimateApproveGas(ctx, tokenToApprove, req.ContractAddress, amountIn, nonceHex, ownerAddr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to approve tokens: %w", err)
+		return nil, fmt.Errorf("failed to estimate approve gas: %w", err)
 	}
 
-	// Wait for approve transaction to be mined
-	err = s.client.WaitForTransaction(ctx, approveTxHash)
-	if err != nil {
-		return nil, fmt.Errorf("approve transaction not confirmed (tx: %s): %w", approveTxHash, err)
-	}
-
-	// Execute swap transaction based on direction (uses nonce N+1)
-	var txHash string
+	// Estimate swap gas and get quote based on direction
+	var swapGasLimit string
 	var amountOut *big.Int
 
 	if req.Direction == "AtoB" {
-		// Get expected output amount before swapping
+		// Get expected output amount
 		amountOut, err = swapClient.GetAmountOutAforB(ctx, req.ContractAddress, amountIn)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get quote for AtoB swap: %w", err)
 		}
 
-		// Execute swap A for B
-		txHash, err = swapClient.SwapAforB(ctx, req.ContractAddress, amountIn, secondNonceHex)
+		// Estimate swap gas with state override
+		swapGasLimit, err = swapClient.EstimateSwapAforBGasWithAllowanceOverride(ctx, req.ContractAddress, tokenA, amountIn, secondNonceHex, ownerAddr, spenderAddr)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute AtoB swap (approve tx: %s): %w", approveTxHash, err)
+			return nil, fmt.Errorf("failed to estimate swapAforB gas: %w", err)
 		}
 	} else { // BtoA
-		// Get expected output amount before swapping
+		// Get expected output amount
 		amountOut, err = swapClient.GetAmountOutBforA(ctx, req.ContractAddress, amountIn)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get quote for BtoA swap: %w", err)
 		}
 
-		// Execute swap B for A
-		txHash, err = swapClient.SwapBforA(ctx, req.ContractAddress, amountIn, secondNonceHex)
+		// Estimate swap gas with state override
+		swapGasLimit, err = swapClient.EstimateSwapBforAGasWithAllowanceOverride(ctx, req.ContractAddress, tokenB, amountIn, secondNonceHex, ownerAddr, spenderAddr)
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute BtoA swap (approve tx: %s): %w", approveTxHash, err)
+			return nil, fmt.Errorf("failed to estimate swapBforA gas: %w", err)
 		}
+	}
+
+	// Send both transactions in parallel with pre-estimated gas
+	type txResult struct {
+		txHash string
+		err    error
+	}
+
+	approveChan := make(chan txResult, 1)
+	swapChan := make(chan txResult, 1)
+
+	// Goroutine 1: Send approve (nonce N)
+	go func() {
+		txHash, err := tokenClient.Approve(ctx, tokenToApprove, req.ContractAddress, amountIn, nonceHex, approveGasLimit)
+		approveChan <- txResult{txHash: txHash, err: err}
+	}()
+
+	// Goroutine 2: Send swap (nonce N+1)
+	go func() {
+		var txHash string
+		var err error
+		if req.Direction == "AtoB" {
+			txHash, err = swapClient.SwapAforBWithGasLimit(ctx, req.ContractAddress, tokenA, amountIn, secondNonceHex, swapGasLimit)
+		} else {
+			txHash, err = swapClient.SwapBforAWithGasLimit(ctx, req.ContractAddress, tokenB, amountIn, secondNonceHex, swapGasLimit)
+		}
+		swapChan <- txResult{txHash: txHash, err: err}
+	}()
+
+	swapResult := <-swapChan
+	if swapResult.err != nil {
+		return nil, fmt.Errorf("failed to send swap transaction: %w", swapResult.err)
 	}
 
 	// Determine from/to tokens based on direction
@@ -164,7 +196,7 @@ func (s *SwapService) Swap(ctx context.Context, req *dtos.SwapTokenRequest) (*dt
 	}
 
 	return &dtos.SwapTokenResponse{
-		TxHash:          txHash,
+		TxHash:          swapResult.txHash,
 		ContractAddress: req.ContractAddress,
 		AmountIn:        amountIn.String(),
 		AmountOut:       amountOut.String(),
